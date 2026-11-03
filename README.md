@@ -2,7 +2,7 @@
 
 Windstock is a Pokémon GO private server and a set of launchers that let you play the game the way it was in 2016. No Niantic account, no ban risk, no internet requirement beyond reaching the server. You log in, you get a live map at your real location, and you catch, spin stops, hatch eggs, and fight at gyms.
 
-I built this by reverse-engineering the old client (0.29 and 0.35, with work on 0.63, 0.67, 0.71 and 0.73) and writing the server from scratch. It's a hobby project that got bigger than planned, and it now has an online server, a website, iOS and Android launchers, and a few mods on top.
+I built this by reverse-engineering the old client (0.29 and 0.35, with work on 0.63, 0.67 and 0.71) and writing the server from scratch. It's a hobby project that got bigger than planned, and it now has an online server, a website, iOS and Android launchers, and a few mods on top.
 
 > **This repo contains none of Niantic's code, assets, or data.** You bring your own legally obtained client. Windstock is not affiliated with or endorsed by Niantic, Nintendo, or The Pokémon Company.
 
@@ -17,7 +17,7 @@ Each build lives on its own branch, and each branch is self-contained with its o
 | [`android-launcher`](../../tree/android-launcher) | The Android port of the launcher, including the 64-bit "Windstock 64" flavour | Working, ongoing |
 | [`translator64`](../../tree/translator64) | Our 32-bit to 64-bit ARM translator work for modern Android phones | Experimental |
 | [`server-063`](../../tree/server-063) | The 0.63 server fork, login patch scripts, iOS launcher fork, Android translator scripts and research notes | Early, experimental |
-| [`server-071`](../../tree/server-071) | The 0.71 server with the newer gym system, Android translator scripts, phone agent, and the WSTweak LiveContainer tweak source (0.67 / 0.73) | Early, experimental |
+| [`server-071`](../../tree/server-071) | The 0.71 server with the newer gym system, Android translator scripts, phone agent, and the WSTweak LiveContainer tweak source (0.67) | Early, experimental |
 | [`website`](../../tree/website) | The windstock.org site: profiles, leaderboard, events, map | Running live |
 
 ## What you get
