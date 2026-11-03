@@ -108,3 +108,7 @@ one place worth correcting if this exact build differs. Common symptoms:
 `GET_MAP_OBJECTS` (spawns/stops/gyms), `ENCOUNTER`/`CATCH_POKEMON`,
 `FORT_SEARCH`, real `DOWNLOAD_SETTINGS`/`GET_INVENTORY`. The handshake plumbing
 and decoder built here are what those build on.
+
+## License
+
+Copyright (C) 2026 Bracky!. Licensed under the [GNU AGPL-3.0](LICENSE). This covers original Windstock code only, not Niantic material or Pokémon trademarks.
