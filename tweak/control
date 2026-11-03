@@ -1,0 +1,9 @@
+Package: com.windstock.nightmusic
+Name: Windstock Night Music
+Version: 0.1.0
+Architecture: iphoneos-arm64
+Description: Night map music 7PM-6AM for the Windstock 0.35 client
+Maintainer: Windstock
+Author: Windstock
+Section: Tweaks
+Depends: mobilesubstrate

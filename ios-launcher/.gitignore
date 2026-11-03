@@ -1,0 +1,6 @@
+Staging/
+Vendor/
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
