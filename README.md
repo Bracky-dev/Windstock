@@ -28,6 +28,8 @@ Each build lives on its own branch, and each branch is self-contained with its o
 
 ## Getting started
 
+**Just want to play?** Follow [INSTALL.md](INSTALL.md) for iOS, Android and self-hosting. The rest of this section is for building from source.
+
 Pick the branch for what you want to build or run, and follow its README.
 
 ```bash
