@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 7.0 (and older 7.x builds) predate Let's Encrypt's ISRG roots,
+     so https://windstock.org would fail there. Ship the two roots alongside
+     the system store. Cleartext stays allowed (local server, bare-IP site). -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/isrg_root_x1" />
+            <certificates src="@raw/isrg_root_x2" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

@@ -1,0 +1,8 @@
+.gradle/
+build/
+app/build/
+local.properties
+Staging/
+*.apk
+!tools/*.apk
+cache/

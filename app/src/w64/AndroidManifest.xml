@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Windstock 64: the game runs inside this app (translator64, work/translator64), in its own
+     ":game" process so the translator never takes the launcher and its server down with it.
+     The rest is the game's own manifest (permissions, activities, services, metadata), as
+     work/translator64/android-app/AndroidManifest.xml has it. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <!-- Only location of the game's runtime ("dangerous") permissions: Unity 5.3 asks for any
+         ungranted one through an anonymous Fragment that modern Android refuses, and then never
+         starts rendering. GameActivity asks for location itself before the engine starts.
+         Dropped from the game's list: CAMERA (AR mode), GET_ACCOUNTS/USE_CREDENTIALS (Google
+         sign-in, removed in Windstock), storage (app dirs need none), activity recognition. -->
+    <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application>
+        <activity
+            android:name=".game.GameActivity"
+            android:process=":game"
+            android:exported="false"
+            android:taskAffinity="com.windstock.windstock64.game"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|screenLayout|uiMode|navigation|fontScale|smallestScreenSize|density"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
+            <meta-data android:name="unityplayer.ForwardNativeEventsToDalvik" android:value="true" />
+        </activity>
+
+        <!-- the game's Java components + metadata (classes come from the game's dex) -->
+        <meta-data android:name="android.max_aspect" android:value="2.4" />
+        <meta-data android:name="com.google.android.gms.version" android:value="8115000" />
+        <activity android:name="com.google.nianticproject.platform.AccountsActivity" android:process=":game" />
+        <activity android:name="com.nianticlabs.nia.account.AccountsActivity" android:process=":game" />
+        <activity android:name="com.nianticlabs.nia.iap.PurchaseActivity" android:process=":game" />
+        <service android:name="com.nianticlabs.nia.useractivity.ActivityRecognitionService" android:process=":game" />
+        <service android:name="com.upsight.android.analytics.internal.DispatcherService" android:process=":game" />
+        <service android:name="com.upsight.android.googlepushservices.internal.PushIntentService" android:process=":game" />
+        <service android:name="com.upsight.android.googlepushservices.internal.PushClickIntentService" android:process=":game" />
+        <activity android:name="com.upsight.android.marketing.internal.billboard.BillboardManagementActivity" android:process=":game" />
+        <activity android:name="com.upsight.mediation.ads.adapters.MRaidActivity" android:process=":game" />
+        <activity android:name="com.upsight.mediation.vast.activity.VASTActivity" android:process=":game" />
+        <activity android:name="com.google.android.gms.ads.AdActivity" android:process=":game" />
+        <activity android:name="com.google.android.gms.ads.purchase.InAppPurchaseActivity" android:process=":game" />
+        <provider android:name="com.upsight.android.internal.persistence.ContentProvider"
+            android:authorities="${applicationId}.upsight" android:exported="false" android:process=":game" />
+        <meta-data android:name="com.upsight.extension.analytics" android:value="com.upsight.android.UpsightAnalyticsExtension" />
+        <meta-data android:name="com.upsight.core" android:value="com.upsight.android.internal.CoreComponentFactory" />
+        <meta-data android:name="com.upsight.extension.googleadvertisingid" android:value="com.upsight.android.UpsightGoogleAdvertisingIdExtension" />
+        <meta-data android:name="com.upsight.extension.googlepushservices" android:value="com.upsight.android.UpsightGooglePushServicesExtension" />
+        <meta-data android:name="com.upsight.extension.managedvariables" android:value="com.upsight.android.UpsightManagedVariablesExtension" />
+        <meta-data android:name="com.upsight.extension.marketing" android:value="com.upsight.android.UpsightMarketingExtension" />
+        <meta-data android:name="com.upsight.session_callbacks" android:value="com.upsight.android.unity.UnitySessionCallbacks" />
+        <meta-data android:name="com.upsight.notification_builder_factory" android:value="com.upsight.android.unity.UnityPushNotificationBuilderFactory" />
+        <meta-data android:name="com.upsight.sdk_plugin" android:value="unity:4.2.3" />
+    </application>
+</manifest>
