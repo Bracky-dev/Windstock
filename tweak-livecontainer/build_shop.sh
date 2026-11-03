@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build WSShop.dylib -- the in-game shop for the 0.67 iOS guest, a tweak of its own.
-#   ios073/tweak/build_shop.sh [server-ip]      (default: the Mac's en0 address)
+#   tweak-livecontainer/build_shop.sh [server-ip]      (default: the Mac's en0 address)
 # Add it in LiveContainer's Tweaks next to (or without) WSTweak.dylib.
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"

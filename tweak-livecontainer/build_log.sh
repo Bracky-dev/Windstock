@@ -1,7 +1,7 @@
 #!/bin/bash
 # Build WSLog.dylib (captures the game's log and sends it to the server).
 #
-#   ios073/tweak/build_log.sh [server-ip]      (default: the Mac's en0 address)
+#   tweak-livecontainer/build_log.sh [server-ip]      (default: the Mac's en0 address)
 #
 # Add it in LiveContainer next to WSTweak.dylib (app settings -> Tweaks). Output goes to
 # the guest's Documents/wslog.txt, and interesting lines show in the server log as

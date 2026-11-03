@@ -1,9 +1,9 @@
 #!/bin/bash
-# Build the LiveContainer tweak dylib (redirect + trust) for the 0.73.1 guest.
+# Build the LiveContainer tweak dylib (redirect + trust) for the 0.67 guest.
 #
-#   ios073/tweak/build.sh [server-ip]      (default: the Mac's en0 address)
+#   tweak-livecontainer/build.sh [server-ip]      (default: the Mac's en0 address)
 #
-# Output: ios073/tweak/WSTweak.dylib -- drop it into the game's Tweaks folder in
+# Output: tweak-livecontainer/WSTweak.dylib -- drop it into the game's Tweaks folder in
 # LiveContainer (app settings -> Tweaks), or the global Tweaks folder. LiveContainer
 # signs it with the app. The server IP is baked in; override on device with env
 # WS_SERVER or <guest Documents>/ws_server.txt.

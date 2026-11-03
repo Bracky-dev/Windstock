@@ -13,7 +13,7 @@
 // Server address: baked at build time (@SERVER@), override with env WS_SERVER or
 // <guest Documents>/ws_server.txt (one IPv4 line), same as WSTweak.
 //
-// Build: ios073/tweak/build_log.sh [server-ip]  ->  WSLog.dylib
+// Build: tweak-livecontainer/build_log.sh [server-ip]  ->  WSLog.dylib
 
 #import <Foundation/Foundation.h>
 #import <os/log.h>

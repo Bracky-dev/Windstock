@@ -37,4 +37,4 @@ Narrow remaining suspects (all checkable on-device):
   is validating. Re-dump delegates; the only RPC trust class found was NIATrusted...
 - Last resort (needs on-device testing, do NOT ship blind): static pin-patch of IMP
   0x1021cf1c4 — force its completionHandler to UseCredential. Offsets recorded in
-  ios073/RESUME.md.
+  the author's resume notes.
