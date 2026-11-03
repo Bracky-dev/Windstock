@@ -56,3 +56,7 @@ This is an independent, educational interoperability project for personal use wi
 - [rastapasta/pokemon-go-mitm](https://github.com/rastapasta/pokemon-go-mitm) for map-object layout reference
 - Chucny, for the Translator runtime behind Windstock 64
 - OpenStreetMap contributors for the map data
+
+## License
+
+Copyright (C) 2026 Bracky!. Licensed under the [GNU AGPL-3.0](LICENSE). This covers original Windstock code only, not Niantic material or Pokémon trademarks.
