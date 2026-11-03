@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Deliberately minimal: a free development profile grants nothing else,
+	     and asking for more makes the sideload fail rather than degrade. -->
+	<key>get-task-allow</key>
+	<true/>
+</dict>
+</plist>

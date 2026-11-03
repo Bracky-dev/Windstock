@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.windstock.translator063"
+    android:versionCode="1" android:versionName="0.1">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="30" />
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <!-- the game's own permissions (from its manifest) -->
+    <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Android 11 package visibility: the agent's lib/launcher.js asks the Windstock
+         launcher's ConfigProvider for the mod toggles (targetSdk 30 hides it otherwise) -->
+    <queries>
+        <provider android:authorities="com.windstock.launcher.config" />
+    </queries>
+
+    <application
+        android:label="PoGO 0.63"
+        android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true"
+        android:extractNativeLibs="true">
+        <activity
+            android:name="com.windstock.translator64.MainActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="unityplayer.UnityActivity" android:value="true" />
+            <meta-data android:name="unityplayer.ForwardNativeEventsToDalvik" android:value="true" />
+        </activity>
+
+        <!-- the game's Java components + metadata (classes come from the game's dex) -->
+        <meta-data android:name="android.max_aspect" android:value="2.4" />
+        <meta-data android:name="com.google.android.gms.version" android:value="8115000" />
+        <activity android:name="com.google.nianticproject.platform.AccountsActivity" />
+        <activity android:name="com.nianticlabs.nia.account.AccountsActivity" />
+        <activity android:name="com.nianticlabs.nia.iap.PurchaseActivity" />
+        <service android:name="com.nianticlabs.nia.useractivity.ActivityRecognitionService" />
+        <service android:name="com.nianticlabs.pokemongoplus.service.BackgroundService" />
+        <activity android:name="com.unity3d.player.UnityPlayerActivity" />
+        <service android:name="com.upsight.android.analytics.internal.DispatcherService" />
+        <service android:name="com.upsight.android.googlepushservices.internal.PushIntentService" />
+        <service android:name="com.upsight.android.googlepushservices.internal.PushClickIntentService" />
+        <activity android:name="com.upsight.android.marketing.internal.billboard.BillboardManagementActivity" />
+        <activity android:name="com.upsight.mediation.ads.adapters.MRaidActivity" />
+        <activity android:name="com.upsight.mediation.vast.activity.VASTActivity" />
+        <activity android:name="com.google.android.gms.ads.AdActivity" />
+        <activity android:name="com.google.android.gms.ads.purchase.InAppPurchaseActivity" />
+        <provider android:name="com.upsight.android.internal.persistence.ContentProvider"
+            android:authorities="com.windstock.translator063.upsight" android:exported="false" />
+        <meta-data android:name="com.upsight.extension.analytics" android:value="com.upsight.android.UpsightAnalyticsExtension" />
+        <meta-data android:name="com.upsight.core" android:value="com.upsight.android.internal.CoreComponentFactory" />
+        <meta-data android:name="com.upsight.extension.googleadvertisingid" android:value="com.upsight.android.UpsightGoogleAdvertisingIdExtension" />
+        <meta-data android:name="com.upsight.extension.googlepushservices" android:value="com.upsight.android.UpsightGooglePushServicesExtension" />
+        <meta-data android:name="com.upsight.extension.managedvariables" android:value="com.upsight.android.UpsightManagedVariablesExtension" />
+        <meta-data android:name="com.upsight.extension.marketing" android:value="com.upsight.android.UpsightMarketingExtension" />
+        <meta-data android:name="com.upsight.session_callbacks" android:value="com.upsight.android.unity.UnitySessionCallbacks" />
+        <meta-data android:name="com.upsight.notification_builder_factory" android:value="com.upsight.android.unity.UnityPushNotificationBuilderFactory" />
+        <meta-data android:name="com.upsight.sdk_plugin" android:value="unity:4.2.3" />
+    </application>
+</manifest>

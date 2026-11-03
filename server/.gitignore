@@ -1,0 +1,8 @@
+certs/
+data/
+__pycache__/
+*.pyc
+build/
+dist/
+*.log
+assets071/

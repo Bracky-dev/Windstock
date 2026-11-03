@@ -15,3 +15,9 @@ signing.local
 local.properties
 build/
 certs/
+game_master.*
+assets*/
+*.mp3
+*.wav
+*.bin
+*.dat

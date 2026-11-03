@@ -1,0 +1,562 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8A156E9D0FC4D1C5AE4CB423 /* fishhook.c in Sources */ = {isa = PBXBuildFile; fileRef = 1BBCDC9C8A53C1EF2A0F64DF /* fishhook.c */; };
+		76865ADEA0E96D68A70230D4 /* WSContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AF96D026F0E325AD01D93F /* WSContainer.m */; };
+		1A116A82C08428FE4B271C8C /* WSPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = 2D3699F6AA883AD11FCC6D24 /* WSPaths.m */; };
+		C29BE683BC507DD485163153 /* WSLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 23322F6A7F56E69A28EA0075 /* WSLog.m */; };
+		87C5AC0BBAD6EFF3886E6226 /* WSNetRedirect.m in Sources */ = {isa = PBXBuildFile; fileRef = A28ECE16083278806702D7D4 /* WSNetRedirect.m */; };
+		D47A71B99883FB7D629242BC /* WSURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = E3EC45356DE7D7FC81B91860 /* WSURLProtocol.m */; };
+		7E493AFE6B9575B5576D64EF /* WSGuestLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 28F5573E51F8A3A72DADB1C2 /* WSGuestLoader.m */; };
+		434E52A7B9325885DCB23D19 /* WSPythonServer.m in Sources */ = {isa = PBXBuildFile; fileRef = DB417F5DDBA76A5D79DFC36A /* WSPythonServer.m */; };
+		7E2D4AA7F4C3C4F6633D863D /* DER.swift in Sources */ = {isa = PBXBuildFile; fileRef = D426EE330BFE65FB20A3966C /* DER.swift */; };
+		8AA25F97356FC93AA3D94990 /* DERReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 960112DA18A2AE234625FF6D /* DERReader.swift */; };
+		FBB75CF12709BB58BB235D44 /* PKCS12.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2B23C260F5DBA026DE29BD /* PKCS12.swift */; };
+		3442852362672BC4386ACD80 /* CMS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C7E35F79F931104259943C8 /* CMS.swift */; };
+		9416E8CDDB73B72112E4EF3B /* CertificateInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3B4ABBD9928C4B0213C338 /* CertificateInfo.swift */; };
+		93AAD1611ED66534AB302B36 /* CertificateChain.swift in Sources */ = {isa = PBXBuildFile; fileRef = D261817A5C350B0B3F195558 /* CertificateChain.swift */; };
+		C408CF291D060BEB05222409 /* SigningIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF7D8EC7AF4575BE6CE9F531 /* SigningIdentity.swift */; };
+		9EF0F365134118C718372411 /* IdentityStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1623302556455363C3C44127 /* IdentityStore.swift */; };
+		854F3234D82788D86AEBE06E /* HostSignature.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F98D48EFF93CCDD03D4A157 /* HostSignature.swift */; };
+		53BC4C34F0C909E1F3AC4991 /* MachOSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A9562B0A14FE3C30E6CBD5 /* MachOSigner.swift */; };
+		BAEFA75F0BAE1EB0C64CB3B1 /* MachOPatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FEA169236FD41397228A133 /* MachOPatcher.swift */; };
+		51D254EFF16AFC51F0E4B335 /* Zip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77E74873880C40899F797773 /* Zip.swift */; };
+		5C2C56C5ACDC4991A7242279 /* AppLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2E9F9F5D56F02091F6579C /* AppLibrary.swift */; };
+		1878D9752729CB5C630AEBB7 /* LoadTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E36D101147AE2BC592BCD56 /* LoadTest.swift */; };
+		A2CB41B057999B1C6AD12246 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 488533B9BED3AB1B5B2C6483 /* AppDelegate.swift */; };
+		6E1FB9D80A749FF1C61163C3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6AD1842DC86BA77A99DCFA3 /* SceneDelegate.swift */; };
+		BED478CE274A1D475004B707 /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95F6995F150788FC9CBCC6BA /* Logging.swift */; };
+		058613B6302D853D63ED1C11 /* LauncherPrefs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46011AA001184D9F4654A7D5 /* LauncherPrefs.swift */; };
+		52AB4B3ACDDD199B692A237E /* LauncherModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 745ECB3A47F8371C8BB91057 /* LauncherModel.swift */; };
+		A8A77E821C0C2A7F8EA9A0CA /* ModsCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3801A0F9342C8B0053E78C9F /* ModsCatalog.swift */; };
+		665008DB469CE4C57E3F6FEB /* ModsConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D509061B84F65F8A6A4731C6 /* ModsConfig.swift */; };
+		3DC4F0B3FF97E39C28FC77AC /* Notifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 978938D460FC436D17155CAA /* Notifier.swift */; };
+		A1767F929E3EA443BA448CAE /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45411AEF6231F42D8A29EFA7 /* Theme.swift */; };
+		CF66B4C5A6E5F2C699BD5CDA /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09EA6580B83EAF5CD9455329 /* RootView.swift */; };
+		6758E7CB0AB374E91EC418CF /* PlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D4BF01874163C9BC3BF25A7 /* PlayView.swift */; };
+		BF5382634D01F4E7756DB1E6 /* ModsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80021BA26C4981874E0DA750 /* ModsView.swift */; };
+		409AE58F031104FDFADE8DC9 /* ServerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 975F5EDFCBCCB705F4374BBC /* ServerView.swift */; };
+		94FFE9C29E3E42871144DF77 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8258BD63897DD811DA3230F /* SettingsView.swift */; };
+		D789D59A0289889D79E1BF0E /* GameEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C8CA58BF12AF9D27113787F /* GameEditorView.swift */; };
+		CB9CFC2F3E993B5DBEAA7706 /* WorldPacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = E71E98CD82146E14B9834E4B /* WorldPacks.swift */; };
+		D3C86018A3F57497DB510D6C /* WorldDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A20352DA7F7DF30B2F77902 /* WorldDataView.swift */; };
+		F73550069C0CACA5602A6CB1 /* OSMLinksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDE42446FFAD37FCECFC5433 /* OSMLinksView.swift */; };
+		918E1675BECF00163077BF6E /* OSMImport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BD674F10D67E98810F2734E /* OSMImport.swift */; };
+		3A7F1C5BEDC09A7FF919D6C2 /* WindstockProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D659AF23B71B85D7954F30D /* WindstockProfile.swift */; };
+		CBAEECA9C368FCD90ED9A650 /* ProfileSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EADB7949163F16C44E50B60E /* ProfileSection.swift */; };
+		F922FE389B1C9BD6F1158C6B /* LogExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A08E56BA91A185F164711A /* LogExport.swift */; };
+		2864351E4FE908C7138D45D2 /* GameSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DDE3A752396554294A9787B /* GameSettings.swift */; };
+		2F6FA351B40918AE6A953EAF /* GameSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C630999668801B9603E0100 /* GameSettingsView.swift */; };
+		2616F34B0E15DAEC361B40B6 /* TutorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C65D9FECC95337F219146FF /* TutorialView.swift */; };
+		6995F6C85BEEF632B1298C07 /* AppsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65698539480F6BB1FA39677C /* AppsSection.swift */; };
+		D13A068C0C75D9B7C75408A0 /* SigningView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E38E907DC6C9614B6FDD1D0 /* SigningView.swift */; };
+		A0B147CE3E54B3CA322A5351 /* CustomDylibs.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8933C955DC17C2054CD9BF1 /* CustomDylibs.swift */; };
+		E0DF0BD76666796AEC9864C3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 3251C0ACC252BD1AF4163839 /* main.m */; };
+		A84450812D602B08AE475056 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6046304F0E7D7DE0ECFBC37D /* LaunchScreen.storyboard */; };
+		89B36817AD3EF70892C292B2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 16A4FDF39D4135F285039955 /* Assets.xcassets */; };
+		912134CD285DDEB598F1E8A7 /* AppleWWDRCAG3.cer in Resources */ = {isa = PBXBuildFile; fileRef = 604F80BD9B62B2F9943D7339 /* AppleWWDRCAG3.cer */; };
+		6BC395805145B798AFEDAED2 /* Python.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 89C6A485FB000302AE401783 /* Python.xcframework */; };
+		00A8097C045A5B2E03C96246 /* Python.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 89C6A485FB000302AE401783 /* Python.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1BBCDC9C8A53C1EF2A0F64DF /* fishhook.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = "fishhook.c"; path = "WindstockLauncher/Container/fishhook.c"; sourceTree = "<group>"; };
+		F8AF96D026F0E325AD01D93F /* WSContainer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "WSContainer.m"; path = "WindstockLauncher/Container/WSContainer.m"; sourceTree = "<group>"; };
+		2D3699F6AA883AD11FCC6D24 /* WSPaths.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "WSPaths.m"; path = "WindstockLauncher/Container/WSPaths.m"; sourceTree = "<group>"; };
+		23322F6A7F56E69A28EA0075 /* WSLog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "WSLog.m"; path = "WindstockLauncher/Container/WSLog.m"; sourceTree = "<group>"; };
+		A28ECE16083278806702D7D4 /* WSNetRedirect.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "WSNetRedirect.m"; path = "WindstockLauncher/Container/WSNetRedirect.m"; sourceTree = "<group>"; };
+		E3EC45356DE7D7FC81B91860 /* WSURLProtocol.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "WSURLProtocol.m"; path = "WindstockLauncher/Container/WSURLProtocol.m"; sourceTree = "<group>"; };
+		28F5573E51F8A3A72DADB1C2 /* WSGuestLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "WSGuestLoader.m"; path = "WindstockLauncher/Container/WSGuestLoader.m"; sourceTree = "<group>"; };
+		DB417F5DDBA76A5D79DFC36A /* WSPythonServer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "WSPythonServer.m"; path = "WindstockLauncher/Server/WSPythonServer.m"; sourceTree = "<group>"; };
+		D426EE330BFE65FB20A3966C /* DER.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "DER.swift"; path = "WindstockLauncher/Signing/DER.swift"; sourceTree = "<group>"; };
+		960112DA18A2AE234625FF6D /* DERReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "DERReader.swift"; path = "WindstockLauncher/Signing/DERReader.swift"; sourceTree = "<group>"; };
+		8E2B23C260F5DBA026DE29BD /* PKCS12.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "PKCS12.swift"; path = "WindstockLauncher/Signing/PKCS12.swift"; sourceTree = "<group>"; };
+		0C7E35F79F931104259943C8 /* CMS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CMS.swift"; path = "WindstockLauncher/Signing/CMS.swift"; sourceTree = "<group>"; };
+		3C3B4ABBD9928C4B0213C338 /* CertificateInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CertificateInfo.swift"; path = "WindstockLauncher/Signing/CertificateInfo.swift"; sourceTree = "<group>"; };
+		D261817A5C350B0B3F195558 /* CertificateChain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CertificateChain.swift"; path = "WindstockLauncher/Signing/CertificateChain.swift"; sourceTree = "<group>"; };
+		EF7D8EC7AF4575BE6CE9F531 /* SigningIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SigningIdentity.swift"; path = "WindstockLauncher/Signing/SigningIdentity.swift"; sourceTree = "<group>"; };
+		1623302556455363C3C44127 /* IdentityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "IdentityStore.swift"; path = "WindstockLauncher/Signing/IdentityStore.swift"; sourceTree = "<group>"; };
+		6F98D48EFF93CCDD03D4A157 /* HostSignature.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "HostSignature.swift"; path = "WindstockLauncher/Signing/HostSignature.swift"; sourceTree = "<group>"; };
+		55A9562B0A14FE3C30E6CBD5 /* MachOSigner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MachOSigner.swift"; path = "WindstockLauncher/Signing/MachOSigner.swift"; sourceTree = "<group>"; };
+		7FEA169236FD41397228A133 /* MachOPatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "MachOPatcher.swift"; path = "WindstockLauncher/Signing/MachOPatcher.swift"; sourceTree = "<group>"; };
+		77E74873880C40899F797773 /* Zip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Zip.swift"; path = "WindstockLauncher/Signing/Zip.swift"; sourceTree = "<group>"; };
+		CE2E9F9F5D56F02091F6579C /* AppLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AppLibrary.swift"; path = "WindstockLauncher/Signing/AppLibrary.swift"; sourceTree = "<group>"; };
+		1E36D101147AE2BC592BCD56 /* LoadTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "LoadTest.swift"; path = "WindstockLauncher/Signing/LoadTest.swift"; sourceTree = "<group>"; };
+		488533B9BED3AB1B5B2C6483 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AppDelegate.swift"; path = "WindstockLauncher/App/AppDelegate.swift"; sourceTree = "<group>"; };
+		A6AD1842DC86BA77A99DCFA3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SceneDelegate.swift"; path = "WindstockLauncher/App/SceneDelegate.swift"; sourceTree = "<group>"; };
+		95F6995F150788FC9CBCC6BA /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Logging.swift"; path = "WindstockLauncher/App/Logging.swift"; sourceTree = "<group>"; };
+		46011AA001184D9F4654A7D5 /* LauncherPrefs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "LauncherPrefs.swift"; path = "WindstockLauncher/App/LauncherPrefs.swift"; sourceTree = "<group>"; };
+		745ECB3A47F8371C8BB91057 /* LauncherModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "LauncherModel.swift"; path = "WindstockLauncher/App/LauncherModel.swift"; sourceTree = "<group>"; };
+		3801A0F9342C8B0053E78C9F /* ModsCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "ModsCatalog.swift"; path = "WindstockLauncher/App/ModsCatalog.swift"; sourceTree = "<group>"; };
+		D509061B84F65F8A6A4731C6 /* ModsConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "ModsConfig.swift"; path = "WindstockLauncher/App/ModsConfig.swift"; sourceTree = "<group>"; };
+		978938D460FC436D17155CAA /* Notifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Notifier.swift"; path = "WindstockLauncher/App/Notifier.swift"; sourceTree = "<group>"; };
+		45411AEF6231F42D8A29EFA7 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Theme.swift"; path = "WindstockLauncher/App/Theme.swift"; sourceTree = "<group>"; };
+		09EA6580B83EAF5CD9455329 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "RootView.swift"; path = "WindstockLauncher/App/RootView.swift"; sourceTree = "<group>"; };
+		7D4BF01874163C9BC3BF25A7 /* PlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "PlayView.swift"; path = "WindstockLauncher/App/PlayView.swift"; sourceTree = "<group>"; };
+		80021BA26C4981874E0DA750 /* ModsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "ModsView.swift"; path = "WindstockLauncher/App/ModsView.swift"; sourceTree = "<group>"; };
+		975F5EDFCBCCB705F4374BBC /* ServerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "ServerView.swift"; path = "WindstockLauncher/App/ServerView.swift"; sourceTree = "<group>"; };
+		C8258BD63897DD811DA3230F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SettingsView.swift"; path = "WindstockLauncher/App/SettingsView.swift"; sourceTree = "<group>"; };
+		9C8CA58BF12AF9D27113787F /* GameEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "GameEditorView.swift"; path = "WindstockLauncher/App/GameEditorView.swift"; sourceTree = "<group>"; };
+		E71E98CD82146E14B9834E4B /* WorldPacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "WorldPacks.swift"; path = "WindstockLauncher/App/WorldPacks.swift"; sourceTree = "<group>"; };
+		7A20352DA7F7DF30B2F77902 /* WorldDataView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "WorldDataView.swift"; path = "WindstockLauncher/App/WorldDataView.swift"; sourceTree = "<group>"; };
+		DDE42446FFAD37FCECFC5433 /* OSMLinksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "OSMLinksView.swift"; path = "WindstockLauncher/App/OSMLinksView.swift"; sourceTree = "<group>"; };
+		4BD674F10D67E98810F2734E /* OSMImport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "OSMImport.swift"; path = "WindstockLauncher/App/OSMImport.swift"; sourceTree = "<group>"; };
+		2D659AF23B71B85D7954F30D /* WindstockProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "WindstockProfile.swift"; path = "WindstockLauncher/App/WindstockProfile.swift"; sourceTree = "<group>"; };
+		EADB7949163F16C44E50B60E /* ProfileSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "ProfileSection.swift"; path = "WindstockLauncher/App/ProfileSection.swift"; sourceTree = "<group>"; };
+		F7A08E56BA91A185F164711A /* LogExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "LogExport.swift"; path = "WindstockLauncher/App/LogExport.swift"; sourceTree = "<group>"; };
+		1DDE3A752396554294A9787B /* GameSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "GameSettings.swift"; path = "WindstockLauncher/App/GameSettings.swift"; sourceTree = "<group>"; };
+		2C630999668801B9603E0100 /* GameSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "GameSettingsView.swift"; path = "WindstockLauncher/App/GameSettingsView.swift"; sourceTree = "<group>"; };
+		3C65D9FECC95337F219146FF /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "TutorialView.swift"; path = "WindstockLauncher/App/TutorialView.swift"; sourceTree = "<group>"; };
+		65698539480F6BB1FA39677C /* AppsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AppsSection.swift"; path = "WindstockLauncher/App/AppsSection.swift"; sourceTree = "<group>"; };
+		1E38E907DC6C9614B6FDD1D0 /* SigningView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SigningView.swift"; path = "WindstockLauncher/App/SigningView.swift"; sourceTree = "<group>"; };
+		A8933C955DC17C2054CD9BF1 /* CustomDylibs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "CustomDylibs.swift"; path = "WindstockLauncher/App/CustomDylibs.swift"; sourceTree = "<group>"; };
+		3251C0ACC252BD1AF4163839 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "main.m"; path = "WindstockLauncher/Support/main.m"; sourceTree = "<group>"; };
+		3D61607BCB67CC9ED045E1F2 /* fishhook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "fishhook.h"; path = "WindstockLauncher/Container/fishhook.h"; sourceTree = "<group>"; };
+		123E9E5BDC0E3E61558A12A7 /* WSContainer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "WSContainer.h"; path = "WindstockLauncher/Container/WSContainer.h"; sourceTree = "<group>"; };
+		1D189B44F3C9710CE8055762 /* WSPaths.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "WSPaths.h"; path = "WindstockLauncher/Container/WSPaths.h"; sourceTree = "<group>"; };
+		3E3605246C4B101E9A145774 /* WSLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "WSLog.h"; path = "WindstockLauncher/Container/WSLog.h"; sourceTree = "<group>"; };
+		54B6B403349A445EF55A88CF /* WSNetRedirect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "WSNetRedirect.h"; path = "WindstockLauncher/Container/WSNetRedirect.h"; sourceTree = "<group>"; };
+		3B759E3AD6C2499588B641B0 /* WSURLProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "WSURLProtocol.h"; path = "WindstockLauncher/Container/WSURLProtocol.h"; sourceTree = "<group>"; };
+		15B91E21A3FCA32054B875C4 /* WSGuestLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "WSGuestLoader.h"; path = "WindstockLauncher/Container/WSGuestLoader.h"; sourceTree = "<group>"; };
+		525E633B07021522E6870D2A /* WSPythonServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "WSPythonServer.h"; path = "WindstockLauncher/Server/WSPythonServer.h"; sourceTree = "<group>"; };
+		F32E06D657607757FD1D674A /* WindstockLauncher-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "WindstockLauncher-Bridging-Header.h"; path = "WindstockLauncher/Support/WindstockLauncher-Bridging-Header.h"; sourceTree = "<group>"; };
+		6046304F0E7D7DE0ECFBC37D /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = "LaunchScreen.storyboard"; path = "WindstockLauncher/Resources/LaunchScreen.storyboard"; sourceTree = "<group>"; };
+		16A4FDF39D4135F285039955 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = "Assets.xcassets"; path = "WindstockLauncher/Resources/Assets.xcassets"; sourceTree = "<group>"; };
+		604F80BD9B62B2F9943D7339 /* AppleWWDRCAG3.cer */ = {isa = PBXFileReference; lastKnownFileType = text; name = "AppleWWDRCAG3.cer"; path = "WindstockLauncher/Resources/AppleWWDRCAG3.cer"; sourceTree = "<group>"; };
+		89C6A485FB000302AE401783 /* Python.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = "Python.xcframework"; path = "Vendor/Python.xcframework"; sourceTree = "<group>"; };
+		9E4587B53799BCD7A82A6344 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info.plist"; path = "WindstockLauncher/Support/Info.plist"; sourceTree = "<group>"; };
+		40A72F7823CF2FC943B84FEA /* WindstockLauncher.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = "WindstockLauncher.entitlements"; path = "WindstockLauncher/Support/WindstockLauncher.entitlements"; sourceTree = "<group>"; };
+		38A007151ABE87CC01A5B6E9 /* WindstockLauncher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WindstockLauncher.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		B4E0AF9012E6A6A55C811824 /* Container */ = {
+			isa = PBXGroup;
+			children = (
+				1BBCDC9C8A53C1EF2A0F64DF /* fishhook.c */,
+				F8AF96D026F0E325AD01D93F /* WSContainer.m */,
+				2D3699F6AA883AD11FCC6D24 /* WSPaths.m */,
+				23322F6A7F56E69A28EA0075 /* WSLog.m */,
+				A28ECE16083278806702D7D4 /* WSNetRedirect.m */,
+				E3EC45356DE7D7FC81B91860 /* WSURLProtocol.m */,
+				28F5573E51F8A3A72DADB1C2 /* WSGuestLoader.m */,
+				3D61607BCB67CC9ED045E1F2 /* fishhook.h */,
+				123E9E5BDC0E3E61558A12A7 /* WSContainer.h */,
+				1D189B44F3C9710CE8055762 /* WSPaths.h */,
+				3E3605246C4B101E9A145774 /* WSLog.h */,
+				54B6B403349A445EF55A88CF /* WSNetRedirect.h */,
+				3B759E3AD6C2499588B641B0 /* WSURLProtocol.h */,
+				15B91E21A3FCA32054B875C4 /* WSGuestLoader.h */,
+			);
+			name = "Container";
+			sourceTree = "<group>";
+		};
+		02E65FF52F911D36E332AAA4 /* Server */ = {
+			isa = PBXGroup;
+			children = (
+				DB417F5DDBA76A5D79DFC36A /* WSPythonServer.m */,
+				525E633B07021522E6870D2A /* WSPythonServer.h */,
+			);
+			name = "Server";
+			sourceTree = "<group>";
+		};
+		ADE4F93751E8823492181261 /* Signing */ = {
+			isa = PBXGroup;
+			children = (
+				D426EE330BFE65FB20A3966C /* DER.swift */,
+				960112DA18A2AE234625FF6D /* DERReader.swift */,
+				8E2B23C260F5DBA026DE29BD /* PKCS12.swift */,
+				0C7E35F79F931104259943C8 /* CMS.swift */,
+				3C3B4ABBD9928C4B0213C338 /* CertificateInfo.swift */,
+				D261817A5C350B0B3F195558 /* CertificateChain.swift */,
+				EF7D8EC7AF4575BE6CE9F531 /* SigningIdentity.swift */,
+				1623302556455363C3C44127 /* IdentityStore.swift */,
+				6F98D48EFF93CCDD03D4A157 /* HostSignature.swift */,
+				55A9562B0A14FE3C30E6CBD5 /* MachOSigner.swift */,
+				7FEA169236FD41397228A133 /* MachOPatcher.swift */,
+				77E74873880C40899F797773 /* Zip.swift */,
+				CE2E9F9F5D56F02091F6579C /* AppLibrary.swift */,
+				1E36D101147AE2BC592BCD56 /* LoadTest.swift */,
+			);
+			name = "Signing";
+			sourceTree = "<group>";
+		};
+		19AD5E543C0220E084901073 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				488533B9BED3AB1B5B2C6483 /* AppDelegate.swift */,
+				A6AD1842DC86BA77A99DCFA3 /* SceneDelegate.swift */,
+				95F6995F150788FC9CBCC6BA /* Logging.swift */,
+				46011AA001184D9F4654A7D5 /* LauncherPrefs.swift */,
+				745ECB3A47F8371C8BB91057 /* LauncherModel.swift */,
+				3801A0F9342C8B0053E78C9F /* ModsCatalog.swift */,
+				D509061B84F65F8A6A4731C6 /* ModsConfig.swift */,
+				978938D460FC436D17155CAA /* Notifier.swift */,
+				45411AEF6231F42D8A29EFA7 /* Theme.swift */,
+				09EA6580B83EAF5CD9455329 /* RootView.swift */,
+				7D4BF01874163C9BC3BF25A7 /* PlayView.swift */,
+				80021BA26C4981874E0DA750 /* ModsView.swift */,
+				975F5EDFCBCCB705F4374BBC /* ServerView.swift */,
+				C8258BD63897DD811DA3230F /* SettingsView.swift */,
+				9C8CA58BF12AF9D27113787F /* GameEditorView.swift */,
+				E71E98CD82146E14B9834E4B /* WorldPacks.swift */,
+				7A20352DA7F7DF30B2F77902 /* WorldDataView.swift */,
+				DDE42446FFAD37FCECFC5433 /* OSMLinksView.swift */,
+				4BD674F10D67E98810F2734E /* OSMImport.swift */,
+				2D659AF23B71B85D7954F30D /* WindstockProfile.swift */,
+				EADB7949163F16C44E50B60E /* ProfileSection.swift */,
+				F7A08E56BA91A185F164711A /* LogExport.swift */,
+				1DDE3A752396554294A9787B /* GameSettings.swift */,
+				2C630999668801B9603E0100 /* GameSettingsView.swift */,
+				3C65D9FECC95337F219146FF /* TutorialView.swift */,
+				65698539480F6BB1FA39677C /* AppsSection.swift */,
+				1E38E907DC6C9614B6FDD1D0 /* SigningView.swift */,
+				A8933C955DC17C2054CD9BF1 /* CustomDylibs.swift */,
+			);
+			name = "App";
+			sourceTree = "<group>";
+		};
+		920EB99A9E915F6F2315E03B /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				3251C0ACC252BD1AF4163839 /* main.m */,
+				F32E06D657607757FD1D674A /* WindstockLauncher-Bridging-Header.h */,
+				9E4587B53799BCD7A82A6344 /* Info.plist */,
+				40A72F7823CF2FC943B84FEA /* WindstockLauncher.entitlements */,
+			);
+			name = "Support";
+			sourceTree = "<group>";
+		};
+		52B0CA5238A8880EC14961ED /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				6046304F0E7D7DE0ECFBC37D /* LaunchScreen.storyboard */,
+				16A4FDF39D4135F285039955 /* Assets.xcassets */,
+				604F80BD9B62B2F9943D7339 /* AppleWWDRCAG3.cer */,
+			);
+			name = "Resources";
+			sourceTree = "<group>";
+		};
+		E5F244F5E3465B1E885D1DDB /* Vendor */ = {
+			isa = PBXGroup;
+			children = (
+				89C6A485FB000302AE401783 /* Python.xcframework */,
+			);
+			name = "Vendor";
+			sourceTree = "<group>";
+		};
+		43931CF8D8FF624E4C75AE32 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				38A007151ABE87CC01A5B6E9 /* WindstockLauncher.app */,
+			);
+			name = "Products";
+			sourceTree = "<group>";
+		};
+		361FF3508AF23F4E0CB329EA /* WindstockLauncher */ = {
+			isa = PBXGroup;
+			children = (
+				B4E0AF9012E6A6A55C811824 /* Container */,
+				02E65FF52F911D36E332AAA4 /* Server */,
+				ADE4F93751E8823492181261 /* Signing */,
+				19AD5E543C0220E084901073 /* App */,
+				920EB99A9E915F6F2315E03B /* Support */,
+				52B0CA5238A8880EC14961ED /* Resources */,
+				E5F244F5E3465B1E885D1DDB /* Vendor */,
+				43931CF8D8FF624E4C75AE32 /* Products */,
+			);
+			name = "WindstockLauncher";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		0E8A3AD980EC179856012B7E /* WindstockLauncher */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A886B50DF087AEF7B87CDC65;
+			buildPhases = (
+				C2511B36F0F0E810A9E46328 /* Sources */,
+				019BAB185F97B56993A7087D /* Frameworks */,
+				C2112B99FC6905E49DE55430 /* Resources */,
+				A91B881E8F1A74F381621541 /* Embed Frameworks */,
+				8C01D2DB8DEEA85CD9EBB6DE /* Stage bundle payload */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "WindstockLauncher";
+			productName = "WindstockLauncher";
+			productReference = 38A007151ABE87CC01A5B6E9;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		98F54143AB4E86B28C3AFEE0 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					0E8A3AD980EC179856012B7E = {CreatedOnToolsVersion = 27.0; };
+				};
+			};
+			buildConfigurationList = 26E84C2B3712F7DFAC8AD93F;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (en, Base, );
+			mainGroup = 361FF3508AF23F4E0CB329EA;
+			productRefGroup = 43931CF8D8FF624E4C75AE32;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (0E8A3AD980EC179856012B7E, );
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C2511B36F0F0E810A9E46328 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8A156E9D0FC4D1C5AE4CB423 /* fishhook.c in Sources */,
+				76865ADEA0E96D68A70230D4 /* WSContainer.m in Sources */,
+				1A116A82C08428FE4B271C8C /* WSPaths.m in Sources */,
+				C29BE683BC507DD485163153 /* WSLog.m in Sources */,
+				87C5AC0BBAD6EFF3886E6226 /* WSNetRedirect.m in Sources */,
+				D47A71B99883FB7D629242BC /* WSURLProtocol.m in Sources */,
+				7E493AFE6B9575B5576D64EF /* WSGuestLoader.m in Sources */,
+				434E52A7B9325885DCB23D19 /* WSPythonServer.m in Sources */,
+				7E2D4AA7F4C3C4F6633D863D /* DER.swift in Sources */,
+				8AA25F97356FC93AA3D94990 /* DERReader.swift in Sources */,
+				FBB75CF12709BB58BB235D44 /* PKCS12.swift in Sources */,
+				3442852362672BC4386ACD80 /* CMS.swift in Sources */,
+				9416E8CDDB73B72112E4EF3B /* CertificateInfo.swift in Sources */,
+				93AAD1611ED66534AB302B36 /* CertificateChain.swift in Sources */,
+				C408CF291D060BEB05222409 /* SigningIdentity.swift in Sources */,
+				9EF0F365134118C718372411 /* IdentityStore.swift in Sources */,
+				854F3234D82788D86AEBE06E /* HostSignature.swift in Sources */,
+				53BC4C34F0C909E1F3AC4991 /* MachOSigner.swift in Sources */,
+				BAEFA75F0BAE1EB0C64CB3B1 /* MachOPatcher.swift in Sources */,
+				51D254EFF16AFC51F0E4B335 /* Zip.swift in Sources */,
+				5C2C56C5ACDC4991A7242279 /* AppLibrary.swift in Sources */,
+				1878D9752729CB5C630AEBB7 /* LoadTest.swift in Sources */,
+				A2CB41B057999B1C6AD12246 /* AppDelegate.swift in Sources */,
+				6E1FB9D80A749FF1C61163C3 /* SceneDelegate.swift in Sources */,
+				BED478CE274A1D475004B707 /* Logging.swift in Sources */,
+				058613B6302D853D63ED1C11 /* LauncherPrefs.swift in Sources */,
+				52AB4B3ACDDD199B692A237E /* LauncherModel.swift in Sources */,
+				A8A77E821C0C2A7F8EA9A0CA /* ModsCatalog.swift in Sources */,
+				665008DB469CE4C57E3F6FEB /* ModsConfig.swift in Sources */,
+				3DC4F0B3FF97E39C28FC77AC /* Notifier.swift in Sources */,
+				A1767F929E3EA443BA448CAE /* Theme.swift in Sources */,
+				CF66B4C5A6E5F2C699BD5CDA /* RootView.swift in Sources */,
+				6758E7CB0AB374E91EC418CF /* PlayView.swift in Sources */,
+				BF5382634D01F4E7756DB1E6 /* ModsView.swift in Sources */,
+				409AE58F031104FDFADE8DC9 /* ServerView.swift in Sources */,
+				94FFE9C29E3E42871144DF77 /* SettingsView.swift in Sources */,
+				D789D59A0289889D79E1BF0E /* GameEditorView.swift in Sources */,
+				CB9CFC2F3E993B5DBEAA7706 /* WorldPacks.swift in Sources */,
+				D3C86018A3F57497DB510D6C /* WorldDataView.swift in Sources */,
+				F73550069C0CACA5602A6CB1 /* OSMLinksView.swift in Sources */,
+				918E1675BECF00163077BF6E /* OSMImport.swift in Sources */,
+				3A7F1C5BEDC09A7FF919D6C2 /* WindstockProfile.swift in Sources */,
+				CBAEECA9C368FCD90ED9A650 /* ProfileSection.swift in Sources */,
+				F922FE389B1C9BD6F1158C6B /* LogExport.swift in Sources */,
+				2864351E4FE908C7138D45D2 /* GameSettings.swift in Sources */,
+				2F6FA351B40918AE6A953EAF /* GameSettingsView.swift in Sources */,
+				2616F34B0E15DAEC361B40B6 /* TutorialView.swift in Sources */,
+				6995F6C85BEEF632B1298C07 /* AppsSection.swift in Sources */,
+				D13A068C0C75D9B7C75408A0 /* SigningView.swift in Sources */,
+				A0B147CE3E54B3CA322A5351 /* CustomDylibs.swift in Sources */,
+				E0DF0BD76666796AEC9864C3 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		019BAB185F97B56993A7087D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6BC395805145B798AFEDAED2 /* Python.xcframework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C2112B99FC6905E49DE55430 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A84450812D602B08AE475056 /* LaunchScreen.storyboard in Resources */,
+				89B36817AD3EF70892C292B2 /* Assets.xcassets in Resources */,
+				912134CD285DDEB598F1E8A7 /* AppleWWDRCAG3.cer in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A91B881E8F1A74F381621541 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				00A8097C045A5B2E03C96246 /* Python.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		8C01D2DB8DEEA85CD9EBB6DE /* Stage bundle payload */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Stage bundle payload";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/bin/sh";
+			shellScript = "set -e\n\"$SRCROOT/tools/stage_payload.sh\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		70DCC1EB255A5F3C8D9ED349 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)", );
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1";
+			};
+			name = "Debug";
+		};
+		C3DCEEC1E0EB17A5583B8E94 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = NO;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release";
+		};
+		DB189EBE9D4E38495C3C7EF5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "WindstockLauncher/Support/WindstockLauncher.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QHP3HB45N8;
+				ENABLE_BITCODE = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = ("$(inherited)", "$(PROJECT_DIR)/Vendor", );
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "WindstockLauncher/Support/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", );
+				MARKETING_VERSION = 1.4;
+				OTHER_LDFLAGS = ("$(inherited)", );
+				PRODUCT_BUNDLE_IDENTIFIER = com.windstock.launcher.QHP3HB45N8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "WindstockLauncher/Support/WindstockLauncher-Bridging-Header.h";
+			};
+			name = "Debug";
+		};
+		032222C0BAA33BC7119DFAF1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "WindstockLauncher/Support/WindstockLauncher.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = QHP3HB45N8;
+				ENABLE_BITCODE = NO;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				FRAMEWORK_SEARCH_PATHS = ("$(inherited)", "$(PROJECT_DIR)/Vendor", );
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "WindstockLauncher/Support/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/Frameworks", );
+				MARKETING_VERSION = 1.4;
+				OTHER_LDFLAGS = ("$(inherited)", );
+				PRODUCT_BUNDLE_IDENTIFIER = com.windstock.launcher.QHP3HB45N8;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OBJC_BRIDGING_HEADER = "WindstockLauncher/Support/WindstockLauncher-Bridging-Header.h";
+			};
+			name = "Release";
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		26E84C2B3712F7DFAC8AD93F = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				70DCC1EB255A5F3C8D9ED349 /* Debug */,
+				C3DCEEC1E0EB17A5583B8E94 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A886B50DF087AEF7B87CDC65 = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DB189EBE9D4E38495C3C7EF5 /* Debug */,
+				032222C0BAA33BC7119DFAF1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 98F54143AB4E86B28C3AFEE0 /* Project object */;
+}
