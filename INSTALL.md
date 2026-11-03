@@ -23,8 +23,8 @@ This guide covers every way to run Windstock. Pick the path that matches your ph
 
 | File | Where |
 |---|---|
-| iOS and Android launcher builds | The downloads page on [windstock.org](https://windstock.org) |
-| Tweak (`windstock-v210.dylib`) | This repo's [Releases](../../releases) |
+| iOS and Android launcher builds | The downloads page on [windstock.org](https://windstock.org), or this repo's [Releases](../../releases) |
+| Launcher builds | This repo's [Releases](../../releases) |
 | Source | The branches of this repo |
 
 ---
@@ -69,12 +69,6 @@ The game uses TLS, and your phone has never seen the server's certificate. This 
 1. Install `server/certs/ca.crt` on the phone (AirDrop or email it, then open it).
 2. **Settings > General > VPN & Device Management**, install the downloaded profile.
 3. **Settings > General > About > Certificate Trust Settings**, turn the new certificate on.
-
-### 5. Optional: the tweak
-
-The tweak (`windstock-v210.dylib`) adds the mods the launcher menu controls: shinies, weather tint, night look, quick catch and more. Launcher builds that already embed a tweak do not need this step. To use a newer one, download it from [Releases](../../releases) and import it under **Settings > Custom dylibs** in the launcher.
-
-> Importing a custom dylib needs the launcher's signing certificate: export your `.p12` from AltStore or SideStore and import it in **Settings** first. This path has not been tested on every device, so if the import fails, send the report from **Report a problem**.
 
 ---
 
