@@ -6,7 +6,7 @@ Forked from the main server, so the layout matches the [`server`](../../tree/ser
 
 ## What's here
 
-- `server/`: the server with the 0.71 gym code (`gym071.py`, `gm071.py`, `extras071.py`), plus 0.67 raid experiments (`raid067.py`, `raid071.py`).
+- `server/`: the server with the 0.71 gym code (`gym071.py`, `gm071.py`, `extras071.py`), plus the raid system (`raid067.py`, `raid071.py`, `raidlobby.py`).
 - `translator/`: the Android translator scripts (agent, APK build, login helper).
 - `phone/`: the iOS agent used to poke at the client on a phone.
 
