@@ -1,0 +1,10 @@
+Windstock 64 runs the game's 32-bit libraries through Chucny's Translator runtime.
+
+  Chucny's Translator  (c) Chucny, AGPL-3.0   https://github.com/Chucny/translator
+    used with the author's permission; his name and the credits below must stay.
+  ZailoxTT             original translator/runtime code that Chucny's Translator is built on
+  Android Open Source Project  guest sysroot (linker + Bionic), Apache-2.0
+  Dynarmic contributors        ARM dynamic recompiler, 0BSD
+
+The translator parts are AGPL-3.0: see zb-app/LICENSE-AGPL-3.0; source of the version
+used is https://github.com/Chucny/translator (v0.2.2 and later).
