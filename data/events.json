@@ -1,0 +1,32 @@
+{
+ "event_name": "Normal",
+ "spawn_density": 5,
+ "species_mode": "all",
+ "species_list": [
+  144,
+  145,
+  146,
+  150,
+  151
+ ],
+ "single_species": 151,
+ "min_cp": 100,
+ "max_cp": 1200,
+ "shiny_rate": 0.0,
+ "allow_overcap": true,
+ "xp_bonus": 2,
+ "xp_bonus_label": "2x XP!",
+ "xp_bonus_until": "2026-09-27T18:00",
+ "xp_bonus_from_ms": 1790550648992,
+ "candy_bonus": 1,
+ "candy_bonus_label": "",
+ "shiny_bonus": 1,
+ "shiny_bonus_label": "",
+ "boost_species": [],
+ "boost_mult": 1,
+ "boost_label": "",
+ "boost_icon": "",
+ "theme": "",
+ "seasonal": true,
+ "schedule": []
+}
