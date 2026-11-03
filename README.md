@@ -12,12 +12,12 @@ Forked from the main server, so the layout matches the [`server`](../../tree/ser
 
 ## Status
 
-Experimental. Raids were scrapped, so the raid files are history only. The 0.71 gym system was tested in the server's own tests but not on a real device.
+Experimental. Raids work.
 
 ## Not included
 
 The client, decrypted IPAs, decoding and decryption tools, assets, game-master data, certificates, and keys. Bring your own legally obtained client.
-
+Proof of concept server.
 ## License
 
 Copyright (C) 2026 Bracky!. Licensed under the [GNU AGPL-3.0](LICENSE). Original Windstock code only, not Niantic material or Pokémon trademarks.
