@@ -76,3 +76,7 @@ the config handshake, including waking a force-stopped launcher; the login test
 against the phone's server over `adb forward`; the install flow up to the system
 prompt and its 32-bit error. **Not verified:** the game itself with the agent on a
 real 32-bit-capable phone — the emulator here cannot run ARM32 code.
+
+## License
+
+Copyright (C) 2026 Bracky!. Licensed under the [GNU AGPL-3.0](LICENSE). This covers original Windstock code only, not Niantic material or Pokémon trademarks.
