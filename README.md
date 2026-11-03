@@ -469,3 +469,7 @@ what it keeps). Night music/sky only show at night (not exercised in the 14:00 t
 Emulator gotcha: a launcher upgraded in place from the 1.0 (Python 3.13) build exits(1) on
 Python start (any config call -> DeadObjectException in the agent); `pm clear
 com.windstock.launcher` fixed it.
+
+## License
+
+AGPL-3.0. Chucny's Translator is (c) Chucny, used with permission; his credits must stay (see NOTICE).
