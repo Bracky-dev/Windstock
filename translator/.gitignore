@@ -1,0 +1,8 @@
+*
+!.gitignore
+!pack_agent.sh
+!login.sh
+!agent.js
+!agent/
+!agent/**
+agent/node_modules/
