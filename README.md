@@ -57,7 +57,7 @@ Bug reports and pull requests are welcome. Open an issue first if it's a big cha
 - **Prebuilt apps:** the launcher builds (Releases and windstock.org) bundle the original Pokémon GO game and art, which belong to Niantic and The Pokémon Company. They are for personal, non-commercial use, and I don't claim any rights to that material. Don't resell or republish them.
 - **Trademarks:** "Pokémon" and "Pokémon GO" are trademarks of their respective owners. This project is an independent fan project and is not affiliated with or endorsed by them.
 - **Map data:** © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors, available under the ODbL.
-- **Third-party components** keep their own licenses and credits (see Credits).
+- **Third-party components** keep their own licenses and credits: see [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 - **Takedowns:** if you are a rights holder with a concern, open an issue and I'll respond.
 
 ## Credits
