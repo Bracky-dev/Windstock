@@ -1,0 +1,968 @@
+diff --git a/translator/core/CMakeLists.txt b/translator/core/CMakeLists.txt
+index 5631fed..39ab301 100644
+--- a/translator/core/CMakeLists.txt
++++ b/translator/core/CMakeLists.txt
+@@ -57,7 +57,7 @@ if (ANDROID)
+     add_library(zbridge SHARED src/zbridge_c_api.cpp android/zbridge_jni.cpp android/jni_env_backend.cpp
+         android/guest_jni_runtime.cpp android/gl_driver_backend.cpp android/asset_driver_backend.cpp
+         android/egl_driver_backend.cpp android/native_window_driver_backend.cpp
+-        android/looper_driver_backend.cpp android/native_activity_glue.cpp)
++        android/looper_driver_backend.cpp android/native_activity_glue.cpp android/windstock_hooks.cpp android/windstock_guest.cpp)
+     # GLESv3 for the GLES 3.0 half of GlDriverBackend. On the device both live in the one real
+     # libGLESv2.so; the NDK splits the stub libraries by version.
+     # core/src for the generated dispatch and driver .inc files the Android backends include.
+diff --git a/translator/core/android/jni_env_backend.cpp b/translator/core/android/jni_env_backend.cpp
+index 063883a..7ea7f58 100644
+--- a/translator/core/android/jni_env_backend.cpp
++++ b/translator/core/android/jni_env_backend.cpp
+@@ -1,5 +1,6 @@
+ // JniBackend over the real JNIEnv (Android build only; compile-checked here, exercised by T7 in 4d).
+ #include "jni_env_backend.h"
++#include "windstock_hooks.h"
+ 
+ #include <cstdint>
+ #include <cstring>
+@@ -432,8 +433,14 @@ bool JniEnvBackend::is_assignable_from(Env env, Ref from, Ref to) {
+ 
+ JniBackend::Id JniEnvBackend::get_method_id(Env env, Ref cls, const char* name, const char* signature,
+                                             bool is_static) {
+-    return I(is_static ? E(env)->GetStaticMethodID(C(cls), name, signature)
+-                       : E(env)->GetMethodID(C(cls), name, signature));
++    const jmethodID id = is_static ? E(env)->GetStaticMethodID(C(cls), name, signature)
++                                   : E(env)->GetMethodID(C(cls), name, signature);
++    if (id != nullptr) {
++        windstock_note_method(E(env), C(cls), name, signature, id);
++        std::lock_guard<std::mutex> lock(sig_mutex_);
++        sigs_[id] = signature;
++    }
++    return I(id);
+ }
+ 
+ JniBackend::Id JniEnvBackend::get_field_id(Env env, Ref cls, const char* name, const char* signature,
+@@ -512,6 +519,25 @@ JValue JniEnvBackend::call_method(Env env, JniCallKind kind, char type, Ref obj,
+     const auto* a = reinterpret_cast<const jvalue*>(args);
+     const jmethodID m = M(method);
+     JValue out{};
++    std::vector<jvalue> patched;   // Windstock: server routing may swap URL arguments
++    {
++        std::string sig;
++        {
++            std::lock_guard<std::mutex> lock(sig_mutex_);
++            const auto it = sigs_.find(m);
++            if (it != sigs_.end()) sig = it->second;
++        }
++        if (!sig.empty() && sig.find("Ljava/lang/String;") != std::string::npos) {
++            std::size_t n = 0;
++            for (std::size_t p = 1; p < sig.size() && sig[p] != ')'; ++p, ++n) {
++                while (sig[p] == '[') ++p;
++                if (sig[p] == 'L') p = sig.find(';', p);
++            }
++            patched.assign(a, a + n);
++            windstock_before_call(e, m, patched.data(), sig.c_str());
++            a = patched.data();
++        }
++    }
+ #define ZB_CALL(Name, member, wrap)                                                       \
+     switch (kind) {                                                                       \
+     case JniCallKind::Virtual: member wrap(e->Call##Name##MethodA(O(obj), m, a)); break;  \
+diff --git a/translator/core/android/jni_env_backend.h b/translator/core/android/jni_env_backend.h
+index e9e73ce..435ee0c 100644
+--- a/translator/core/android/jni_env_backend.h
++++ b/translator/core/android/jni_env_backend.h
+@@ -3,6 +3,7 @@
+ #include <jni.h>
+ 
+ #include <mutex>
++#include <unordered_map>
+ #include <string>
+ 
+ #include "zb/jni_backend.h"
+@@ -83,6 +84,9 @@ public:
+     bool set_class_loader(JNIEnv* env, jobject class_loader);
+ 
+ private:
++    // Windstock: descriptor of every method id handed out, for the server-routing hooks.
++    std::mutex sig_mutex_;
++    std::unordered_map<jmethodID, std::string> sigs_;
+     // Reflection classes and ids, looked up once. Classes are global references to boot classes,
+     // which are never unloaded, so they and their method ids stay valid for the process.
+     struct Reflection {
+diff --git a/translator/core/android/windstock_guest.cpp b/translator/core/android/windstock_guest.cpp
+new file mode 100644
+index 0000000..4692d58
+--- /dev/null
++++ b/translator/core/android/windstock_guest.cpp
+@@ -0,0 +1,494 @@
++// Windstock additions to Chucny's Translator (AGPL-3.0, same licence as the rest of this tree).
++//
++// Guest hooks + the C surface the in-app Frida agent (work/mods/android-035/t64) drives. The agent
++// runs in the 64-bit host; everything it does to the 32-bit game goes through these exports:
++//
++//   wst_gbase()                         host address of guest address 0
++//   wst_gcall(fn, args, n)              call guest code (r0-r3 + stack), r0|r1<<32 back
++//   wst_gsym(lib, name)                 a guest module's export (Thumb bit kept)
++//   wst_gmodule(lib, &base, &size)      where a guest module sits
++//   wst_galloc(n) / wst_gfree(p)        guest heap (the guest's own calloc/free)
++//   wst_ghook(addr, cb, leave)          patch a guest function's entry -> cb
++//   wst_ghook_orig(id)                  callable copy of the entry (the original)
++//   wst_gunhook(id)
++//
++// A hook overwrites the first 8 bytes of the function with a jump to an SVC stub. The stub hands
++// the registers to the host callback, which either lets the original run (through a trampoline:
++// the relocated first instructions + a jump back) or returns at once with r0/r1 it set. On the
++// hooking thread, a call to the same function made from inside its own callback goes straight to
++// the original, like Frida's Interceptor.replace.
++#include <jni.h>
++#include <sys/mman.h>
++
++#include <algorithm>
++#include <atomic>
++#include <chrono>
++#include <cstdint>
++#include <cstring>
++#include <map>
++#include <mutex>
++#include <string>
++#include <unordered_map>
++#include <vector>
++
++#include "zb/library_protocol.h"
++#include "zb/library_runtime.h"
++#include "zb/log.h"
++#include "zb/process.h"
++
++namespace zb {
++
++namespace {
++
++using u8 = std::uint8_t;
++using u16 = std::uint16_t;
++using u32 = std::uint32_t;
++
++constexpr u32 kLeaveIndex = 0xF800;          // svc #(0x5A0000 | index): hook stubs use 0xF801 + id
++constexpr u32 kMaxHooks = 0x2FE;   // indices 0xF801..0xFAFF: below the JNI host calls at 0xFB00
++constexpr u32 kArenaSize = 512 * 1024;
++
++LibraryRuntime* g_rt = nullptr;
++std::mutex g_mu;
++u32 g_arena = 0, g_arena_used = 0;
++
++inline GuestMemory& mem() { return g_rt->memory(); }
++inline u8* H(u32 a) { return mem().base() + a; }
++u16 rd16(u32 a) { u16 v; std::memcpy(&v, H(a), 2); return v; }
++u32 rd32(u32 a) { u32 v; std::memcpy(&v, H(a), 4); return v; }
++
++// Writes into guest memory that may be mapped read-only on the host (code pages).
++void gwrite(u32 a, const void* src, u32 n) {
++    const u32 first = page_round_down(a), last = page_round_down(a + n - 1);
++    std::vector<std::pair<u32, int>> saved;
++    for (u32 p = first;; p += kPageSize) {
++        const u8 f = mem().page_flags(p);
++        int g = ((f & kPageRead) ? PROT_READ : 0) | ((f & kPageWrite) ? PROT_WRITE : 0) | ((f & kPageExec) ? PROT_EXEC : 0);
++        saved.emplace_back(p, host_prot(g));
++        ::mprotect(H(p), kPageSize, PROT_READ | PROT_WRITE);
++        if (p == last) break;
++    }
++    std::memcpy(H(a), src, n);
++    for (auto& s : saved) ::mprotect(H(s.first), kPageSize, s.second);
++}
++void w16(u32 a, u16 v) { gwrite(a, &v, 2); }
++void w32(u32 a, u32 v) { gwrite(a, &v, 4); }
++
++// Executable guest memory for stubs and trampolines (bump allocator, never freed).
++u32 arena_alloc(u32 n) {
++    if (!g_arena) {
++        Process& proc = g_rt->process();
++        std::lock_guard<std::mutex> lock(proc.mm_mutex());
++        g_arena = mem().find_free(kArenaSize, Process::kMmapLimit);
++        if (!g_arena || !mem().map_anon(g_arena, kArenaSize, PROT_READ | PROT_WRITE | PROT_EXEC)) { g_arena = 0; return 0; }
++        // word 0: the leave stub
++        const u32 svc = 0xEF000000u | (0x5A0000u | kLeaveIndex);
++        std::memcpy(H(g_arena), &svc, 4);
++        g_arena_used = 4;
++    }
++    n = (n + 3) & ~3u;
++    if (g_arena_used + n > kArenaSize) return 0;
++    const u32 at = g_arena + g_arena_used;
++    g_arena_used += n;
++    return at;
++}
++
++// ---- relocation of the overwritten entry ----
++struct Emit {
++    std::vector<u8> code;
++    std::vector<std::pair<size_t, u32>> lits;   // (offset of the 32-bit LDR, value)
++    void h(u16 v) { code.push_back(u8(v)); code.push_back(u8(v >> 8)); }
++    void w(u32 v) { for (int i = 0; i < 4; ++i) code.push_back(u8(v >> (8 * i))); }
++};
++
++bool thumb32(u16 hw) { return (hw >> 11) == 0x1D || (hw >> 11) == 0x1E || (hw >> 11) == 0x1F; }
++
++void t_ldr_lit(Emit& e, int rt, u32 value) {   // Thumb LDR.W Rt, [PC, #lit], fixed up later
++    e.lits.emplace_back(e.code.size(), value);
++    e.h(0xF8DF); e.h(u16(rt << 12));
++}
++
++bool reloc_thumb(u32 pc, u32 need, Emit& e, u32* consumed) {
++    u32 off = 0;
++    while (off < need) {
++        u32 a = pc + off;
++        u16 hw = rd16(a);
++        if (thumb32(hw)) {
++            u16 hw2 = rd16(a + 2);
++            if ((hw & 0xFF7F) == 0xF85F) {                     // LDR.W Rt, [PC, #+-imm12]
++                int rt = hw2 >> 12; u32 imm = hw2 & 0xFFF;
++                u32 base = (a + 4) & ~3u;
++                u32 src = (hw & 0x80) ? base + imm : base - imm;
++                t_ldr_lit(e, rt, src);
++                e.h(u16(0xF8D0 | rt)); e.h(u16(rt << 12));    // LDR.W Rt, [Rt]
++            } else if ((hw & 0xF800) == 0xF000 && (hw2 & 0xC000) == 0xC000) {
++                return false;                                  // BL/BLX: not in a prologue we handle
++            } else if ((hw & 0xF800) == 0xF000 && (hw2 & 0x8000) == 0x8000) {
++                return false;                                  // B.W / Bcc.W
++            } else {
++                e.h(hw); e.h(hw2);
++            }
++            off += 4;
++        } else {
++            if (hw == 0x4770 || (hw & 0xFF00) == 0xBD00) {     // BX LR / POP {..,pc}: function ends
++                e.h(hw); off += 2;
++                if (off < need) return false;
++                continue;
++            }
++            if ((hw & 0xF800) == 0x4800) {                     // LDR Rt, [PC, #imm8*4]
++                int rt = (hw >> 8) & 7;
++                u32 src = ((a + 4) & ~3u) + (hw & 0xFF) * 4;
++                t_ldr_lit(e, rt, src);
++                e.h(u16(0x6800 | (rt << 3) | rt));             // LDR Rt, [Rt]
++            } else if ((hw & 0xFF78) == 0x4478) {              // ADD Rdn, PC
++                int rd = (hw & 7) | ((hw >> 4) & 8);
++                t_ldr_lit(e, 12, a + 4);
++                e.h(u16(0x4400 | ((rd & 8) << 4) | (12 << 3) | (rd & 7)));   // ADD Rd, r12
++            } else if ((hw & 0xF800) == 0xA000) {              // ADR Rd, #imm8*4
++                int rd = (hw >> 8) & 7;
++                t_ldr_lit(e, rd, ((a + 4) & ~3u) + (hw & 0xFF) * 4);
++            } else if ((hw & 0xF000) == 0xD000 || (hw & 0xF800) == 0xE000 || (hw & 0xF500) == 0xB100 ||
++                       ((hw & 0xFF00) == 0xBF00 && (hw & 0xF) != 0) || (hw & 0xFF87) == 0x4687 ||
++                       (hw & 0xFF00) == 0x4700) {
++                return false;                                  // branches, IT blocks, writes to PC
++            } else {
++                e.h(hw);
++            }
++            off += 2;
++        }
++    }
++    *consumed = off;
++    return true;
++}
++
++bool reloc_arm(u32 pc, u32 need, Emit& e, u32* consumed) {
++    for (u32 off = 0; off < need; off += 4) {
++        u32 a = pc + off, i = rd32(a);
++        u32 cond = i >> 28;
++        if (cond == 0xF) return false;
++        if ((i & 0x0F7F0000) == 0x051F0000 && cond == 0xE) {   // LDR Rt, [PC, #+-imm12]
++            int rt = (i >> 12) & 15;
++            if (rt == 15) return false;
++            u32 src = (i & (1u << 23)) ? a + 8 + (i & 0xFFF) : a + 8 - (i & 0xFFF);
++            e.lits.emplace_back(e.code.size(), src);
++            e.w(0xE59F0000u | (u32(rt) << 12));
++            e.w(0xE5900000u | (u32(rt) << 16) | (u32(rt) << 12));
++            continue;
++        }
++        if (i == 0xE12FFF1Eu || (i & 0xFFFF8000u) == 0xE8BD8000u) {   // BX LR / POP {..,pc}
++            e.w(i);
++            if (off + 4 < need) return false;
++            continue;
++        }
++        if ((i & 0xFF000000) == 0xEA000000) {                  // B (always): a PLT-style jump stub
++            const int32_t imm = int32_t(i << 8) >> 6;           // imm24 << 2, sign-extended
++            e.w(0xE51FF004u);                                   // LDR PC, [PC, #-4]
++            e.w(a + 8 + u32(imm));
++            *consumed = need;                                   // nothing after an unconditional jump runs
++            return true;
++        }
++        if ((i & 0x0E000000) == 0x0A000000) return false;      // conditional B / BL
++        bool dp = (i & 0x0C000000) == 0;
++        if (dp && (((i >> 16) & 15) == 15 || ((i >> 12) & 15) == 15 || (!(i & (1u << 25)) && (i & 15) == 15)))
++            return false;
++        if ((i & 0x0C000000) == 0x04000000 && (((i >> 16) & 15) == 15 || ((i >> 12) & 15) == 15))
++            return false;
++        if ((i & 0x0E000000) == 0x08000000 && (i & (1u << 15))) return false;
++        e.w(i);
++    }
++    *consumed = need;
++    return true;
++}
++
++// Builds the trampoline in the arena: relocated entry, jump back, literal pool.
++u32 build_tramp(u32 addr, u32* patched_len) {
++    const bool thumb = addr & 1;
++    const u32 pc = addr & ~1u;
++    Emit e; u32 used = 0;
++    if (thumb) {
++        if (!reloc_thumb(pc, 8, e, &used)) return 0;
++        if (e.code.size() & 2) e.h(0xBF00);
++        e.h(0xF8DF); e.h(0xF000);                              // LDR.W PC, [PC, #0]
++        e.w((pc + used) | 1);
++    } else {
++        if (!reloc_arm(pc, 8, e, &used)) return 0;
++        e.w(0xE51FF004u);                                      // LDR PC, [PC, #-4]
++        e.w(pc + used);
++    }
++    const size_t pool = e.code.size();
++    for (size_t k = 0; k < e.lits.size(); ++k) e.w(0);
++    u32 t = arena_alloc(u32(e.code.size()) + 8);
++    if (!t) return 0;
++    t = (t + 3) & ~3u;
++    std::vector<u8> img = e.code;
++    for (size_t k = 0; k < e.lits.size(); ++k) {
++        const size_t at = e.lits[k].first;
++        const u32 lit = t + u32(pool + 4 * k);
++        if (thumb) {
++            const u32 base = (t + u32(at) + 4) & ~3u;
++            u16 hw2; std::memcpy(&hw2, &img[at + 2], 2);
++            hw2 = u16((hw2 & 0xF000) | (lit - base));
++            std::memcpy(&img[at + 2], &hw2, 2);
++        } else {
++            u32 ins; std::memcpy(&ins, &img[at], 4);
++            ins = (ins & ~0xFFFu) | (lit - (t + u32(at) + 8));
++            std::memcpy(&img[at], &ins, 4);
++        }
++        const u32 v = e.lits[k].second;
++        std::memcpy(&img[pool + 4 * k], &v, 4);
++    }
++    gwrite(t, img.data(), u32(img.size()));
++    *patched_len = used;
++    g_rt->process().invalidate(t, u32(img.size()));
++    return thumb ? (t | 1) : t;
++}
++
++// ---- hooks ----
++// regs: r0..r15, cpsr. Returns 0 = run the original, 1 = return now (r0/r1 as set),
++// 2 = run the original and call back again (kind 1) when it returns. kind: 0 entry, 1 leave.
++using HookCb = int (*)(int id, int kind, u32* regs);
++
++struct Hook {
++    u32 addr = 0, tramp = 0, stub = 0;
++    HookCb cb = nullptr;
++    bool leave = false, live = false;
++    u8 saved[12] = {};
++    u32 saved_len = 0;
++};
++std::vector<Hook> g_hooks;
++
++struct Pending { u32 lr; int id; u32 sp; };
++thread_local std::vector<Pending> t_leave;
++thread_local std::vector<int> t_in_cb;
++
++void regs_out(GuestThread& t, u32* r) {
++    auto& R = t.regs();
++    for (int i = 0; i < 16; ++i) r[i] = R[i];
++    r[16] = t.cpsr();
++}
++void regs_in(GuestThread& t, const u32* r) {
++    auto& R = t.regs();
++    for (int i = 0; i < 13; ++i) R[i] = r[i];
++    R[14] = r[14];
++}
++void jump(GuestThread& t, u32 target) {
++    t.set_cpsr((t.cpsr() & ~0x20u) | ((target & 1) ? 0x20u : 0u));
++    t.regs()[15] = target & ~1u;
++}
++
++void h_hook(int id, GuestThread& t) {
++    Hook h;
++    { std::lock_guard<std::mutex> l(g_mu); h = g_hooks[id]; }
++    bool nested = false;
++    for (int x : t_in_cb) if (x == id) { nested = true; break; }
++    if (!h.live || nested || !h.cb) { jump(t, h.tramp); return; }
++    u32 r[17]; regs_out(t, r);
++    t_in_cb.push_back(id);
++    const int act = h.cb(id, 0, r);
++    t_in_cb.pop_back();
++    regs_in(t, r);
++    if (act == 1) { jump(t, r[14]); return; }            // replaced: back to the caller
++    if (act == 2) {                                      // run the original, then see its return
++        t_leave.push_back({r[14], id, r[13]});
++        t.regs()[14] = g_arena;                          // the original returns into the leave stub
++    }
++    jump(t, h.tramp);
++}
++
++void h_leave(GuestThread& t) {
++    const u32 sp = t.regs()[13];
++    while (!t_leave.empty() && t_leave.back().sp < sp) t_leave.pop_back();
++    if (t_leave.empty()) { log("windstock: hook leave with nothing pending"); jump(t, 0); return; }
++    const Pending p = t_leave.back(); t_leave.pop_back();
++    HookCb cb; { std::lock_guard<std::mutex> l(g_mu); cb = g_hooks[p.id].cb; }
++    u32 r[17]; regs_out(t, r);
++    r[14] = p.lr;
++    if (cb) { t_in_cb.push_back(p.id); cb(p.id, 1, r); t_in_cb.pop_back(); }
++    regs_in(t, r);
++    jump(t, p.lr);
++}
++
++// ---- calling the guest ----
++std::optional<GuestResult> call(u32 fn, const u32* args, int n) {
++    GuestCall c;
++    for (int i = 0; i < n; ++i) { if (i < 4) c.regs[i] = args[i]; else c.stack.push_back(args[i]); }
++    if (auto r = g_rt->call_on_current(fn, c)) return r;
++    return g_rt->call_on_service(fn, c);
++}
++
++std::mutex g_sym_mu;
++std::map<std::string, u32> g_handles;
++
++u32 lib_handle(const std::string& lib) {
++    std::lock_guard<std::mutex> l(g_sym_mu);
++    auto it = g_handles.find(lib);
++    if (it != g_handles.end()) return it->second;
++    std::string err;
++    const u32 h = g_rt->load_library(lib, ZB_GUEST_RTLD_NOW, err);
++    if (!h) { log("windstock: dlopen(%s) failed: %s", lib.c_str(), err.c_str()); return 0; }
++    g_handles[lib] = h;
++    return h;
++}
++
++u32 sym(const char* lib, const char* name) {
++    const u32 h = lib_handle(lib);
++    if (!h) return 0;
++    std::string err;
++    return g_rt->find_symbol(h, name, err);
++}
++
++}  // namespace
++
++void windstock_guest_started(LibraryRuntime* runtime) {
++    g_rt = runtime;
++    log("windstock: guest hook layer ready");
++}
++
++bool windstock_handle_host_call(u32 index, GuestThread& thread) {
++    if (index < kLeaveIndex || index > kLeaveIndex + kMaxHooks + 1) return false;
++    if (index == kLeaveIndex) h_leave(thread);
++    else h_hook(int(index - kLeaveIndex - 1), thread);
++    return true;
++}
++
++}  // namespace zb
++
++using namespace zb;
++
++#define WST_EXPORT extern "C" __attribute__((visibility("default")))
++
++WST_EXPORT void* wst_gbase() { return g_rt ? mem().base() : nullptr; }
++
++WST_EXPORT uint64_t wst_gcall(uint32_t fn, const uint32_t* args, int n) {
++    if (!g_rt) return 0;
++    auto r = call(fn, args, n);
++    return r ? (uint64_t(r->r1) << 32) | r->r0 : 0;
++}
++
++WST_EXPORT uint32_t wst_gsym(const char* lib, const char* name) { return g_rt ? sym(lib, name) : 0; }
++
++WST_EXPORT int wst_gmodule(const char* lib, uint32_t* base, uint32_t* size) {
++    return g_rt && g_rt->process().module_range(lib, base, size) ? 1 : 0;
++}
++
++WST_EXPORT uint32_t wst_galloc(uint32_t n) {
++    static u32 calloc_fn = 0;
++    if (!calloc_fn) calloc_fn = sym("libc.so", "calloc");
++    if (!calloc_fn) return 0;
++    const u32 a[2] = {1, n ? n : 1};
++    auto r = call(calloc_fn, a, 2);
++    return r ? r->r0 : 0;
++}
++
++WST_EXPORT void wst_gfree(uint32_t p) {
++    static u32 free_fn = 0;
++    if (!free_fn) free_fn = sym("libc.so", "free");
++    if (free_fn && p) call(free_fn, &p, 1);
++}
++
++WST_EXPORT int wst_ghook(uint32_t addr, HookCb cb, int leave) {
++    if (!g_rt) return -1;
++    std::lock_guard<std::mutex> l(g_mu);
++    for (auto& h : g_hooks)
++        if (h.addr == addr && h.live) { log("windstock: %08x already hooked", addr & ~1u); return -1; }
++    if (g_hooks.size() >= kMaxHooks) return -1;
++    // A function that is just `B target` (a jump stub, often 4 bytes with another stub right after
++    // it) cannot take our 8-byte patch without destroying its neighbour: hook where it jumps to.
++    for (int hop = 0; hop < 4 && !(addr & 1); ++hop) {
++        const u32 ins = rd32(addr);
++        if ((ins & 0xFF000000) != 0xEA000000) break;
++        const u32 to = addr + 8 + u32(int32_t(ins << 8) >> 6);
++        log("windstock: %08x is a jump stub -> hooking %08x", addr, to);
++        addr = to;
++    }
++    for (auto& h : g_hooks)
++        if (h.addr == addr && h.live) return h.addr == addr ? -1 : -1;
++    Hook h; h.addr = addr; h.cb = cb; h.leave = leave != 0;
++    u32 len = 0;
++    h.tramp = build_tramp(addr, &len);
++    if (!h.tramp) { log("windstock: %08x (%s): entry not relocatable: %08x %08x", addr & ~1u, (addr & 1) ? "thumb" : "arm", rd32(addr & ~1u), rd32((addr & ~1u) + 4)); return -1; }
++    const int id = int(g_hooks.size());
++    const u32 stub = arena_alloc(4);
++    if (!stub) return -1;
++    const u32 svc = 0xEF000000u | (0x5A0000u | (kLeaveIndex + 1 + id));
++    gwrite(stub, &svc, 4);
++    h.stub = stub;
++    const u32 pc = addr & ~1u;
++    h.saved_len = len;
++    std::memcpy(h.saved, H(pc), len);
++    if (addr & 1) {
++        // LDR.W PC, [PC, #lit]: the literal sits at pc+4 (base is pc aligned down to 4)
++        u8 patch[8];
++        const u16 a0 = 0xF8DF, a1 = (pc & 2) ? 0xF002 : 0xF000;
++        std::memcpy(patch, &a0, 2); std::memcpy(patch + 2, &a1, 2); std::memcpy(patch + 4, &stub, 4);
++        gwrite(pc, patch, 8);
++    } else {
++        const u32 w[2] = {0xE51FF004u, stub};
++        gwrite(pc, w, 8);
++    }
++    for (u32 k = 8; k < len; k += 2) { u16 nop = 0xBF00; gwrite(pc + k, &nop, 2); }
++    h.live = true;
++    g_hooks.push_back(h);
++    g_rt->process().invalidate(pc, len < 8 ? 8 : len);
++    log("windstock: hook #%d at %08x (%s, %u bytes moved)", id, pc, (addr & 1) ? "thumb" : "arm", len);
++    return id;
++}
++
++WST_EXPORT uint32_t wst_ghook_orig(int id) {
++    std::lock_guard<std::mutex> l(g_mu);
++    return id >= 0 && id < int(g_hooks.size()) ? g_hooks[id].tramp : 0;
++}
++
++WST_EXPORT void wst_gunhook(int id) {
++    std::lock_guard<std::mutex> l(g_mu);
++    if (id < 0 || id >= int(g_hooks.size()) || !g_hooks[id].live) return;
++    Hook& h = g_hooks[id];
++    const u32 pc = h.addr & ~1u;
++    gwrite(pc, h.saved, h.saved_len);
++    h.live = false;
++    g_rt->process().invalidate(pc, h.saved_len);
++}
++
++// True once the guest's il2cpp runtime is fully up (il2cpp_init has returned): the moment the
++// Windstock agent may start calling into it, before Unity draws its first frame. The domain
++// exists long before that (il2cpp_init creates it first), so it is not a sign of readiness: a
++// leave-hook on il2cpp_init says when init is over. If init was already running when we first
++// looked, the hook cannot see its end; then the domain staying up for 5 s has to do.
++static std::atomic<int> g_init_hook{-2};      // -2 not tried, -1 failed, >=0 hook id
++static std::atomic<bool> g_init_left{false};
++static std::atomic<int64_t> g_domain_since{0};
++
++static int init_cb(int, int kind, u32*) {
++    if (kind == 0) return 2;                  // run the original and tell me when it returns
++    g_init_left = true;
++    return 0;
++}
++
++extern "C" __attribute__((visibility("default"))) jboolean
++Java_com_windstock_translator64_WsHooks_nGuestReady(void*, void*) {
++    if (!g_rt) return 0;
++    uint32_t base, size;
++    if (!g_rt->process().module_range("libil2cpp.so", &base, &size)) return 0;
++    static u32 dom = 0, init = 0;
++    if (!dom) dom = sym("libil2cpp.so", "il2cpp_domain_get");
++    if (!init) init = sym("libil2cpp.so", "il2cpp_init");
++    if (!dom || !init) return 0;
++    if (g_init_left) {
++        int id = g_init_hook.exchange(-1);
++        if (id >= 0) wst_gunhook(id);         // the agent hooks il2cpp_init itself when it is early
++        return 1;
++    }
++    auto r = call(dom, nullptr, 0);
++    const bool has_domain = r && r->r0 != 0;
++    if (g_init_hook == -2 && !has_domain) g_init_hook = wst_ghook(init, init_cb, 1);
++    if (!has_domain) return 0;
++    if (g_init_hook >= 0 || g_init_hook == -2) {
++        // hooked before init ran: wait for the leave
++        return 0;
++    }
++    const int64_t now = std::chrono::duration_cast<std::chrono::milliseconds>(
++        std::chrono::steady_clock::now().time_since_epoch()).count();
++    int64_t zero = 0;
++    g_domain_since.compare_exchange_strong(zero, now);
++    return now - g_domain_since >= 5000;
++}
+diff --git a/translator/core/android/windstock_hooks.cpp b/translator/core/android/windstock_hooks.cpp
+new file mode 100644
+index 0000000..ff157c8
+--- /dev/null
++++ b/translator/core/android/windstock_hooks.cpp
+@@ -0,0 +1,136 @@
++// Windstock additions to Chucny's Translator (AGPL-3.0, same licence as the rest of this tree).
++//
++// Points the game at the Windstock server from inside the JNI bridge: the game's network layer
++// (NiaNet) and Unity's WWW are Java classes the translated engine calls through JNI, and a few
++// hooks hand those calls to our Java (com.windstock.translator64.WsNet) first.
++//   - NiaNet.request(J,I,String url,I,String headers,ByteBuffer,I,I)  -> WsNet.route
++//   - WWW constructors taking a URL                                    -> WsNet.localUrl
++//   - after native NiaNet.nativeSetupConnection(conn)                  -> WsNet.setup(conn)
++#include <jni.h>
++
++#include <cstring>
++#include <mutex>
++#include <string>
++#include <unordered_set>
++#include <vector>
++
++#include "windstock_hooks.h"
++#include "zb/log.h"
++#include "zb/native_thunks.h"
++
++namespace zb {
++
++namespace {
++
++std::mutex g_mu;
++std::unordered_set<jmethodID> g_request, g_www;
++jclass g_wsnet = nullptr;
++jmethodID g_route = nullptr, g_local_url = nullptr, g_setup = nullptr;
++
++std::string class_name(JNIEnv* e, jclass cls) {
++    jclass kc = e->FindClass("java/lang/Class");
++    jmethodID gn = kc ? e->GetMethodID(kc, "getName", "()Ljava/lang/String;") : nullptr;
++    std::string out;
++    if (gn) {
++        auto s = static_cast<jstring>(e->CallObjectMethod(cls, gn));
++        if (s) {
++            const char* c = e->GetStringUTFChars(s, nullptr);
++            if (c) out = c;
++            if (c) e->ReleaseStringUTFChars(s, c);
++            e->DeleteLocalRef(s);
++        }
++    }
++    if (kc) e->DeleteLocalRef(kc);
++    if (e->ExceptionCheck()) e->ExceptionClear();
++    return out;
++}
++
++// positions of 'Ljava/lang/String;' parameters in a method descriptor
++std::vector<int> string_params(const std::string& sig, int* count) {
++    std::vector<int> out;
++    int idx = 0;
++    for (size_t p = 1; p < sig.size() && sig[p] != ')'; ++p, ++idx) {
++        if (sig.compare(p, 18, "Ljava/lang/String;") == 0) out.push_back(idx);
++        while (sig[p] == '[') ++p;
++        if (sig[p] == 'L') p = sig.find(';', p);
++    }
++    *count = idx;
++    return out;
++}
++
++}  // namespace
++
++void windstock_note_method(void* env, void* cls, const char* name, const char* sig, void* id) {
++    if (!g_wsnet || !name || !sig) return;
++    const bool req = !std::strcmp(name, "request") || !std::strcmp(name, "doSyncRequest");
++    const bool init = !std::strcmp(name, "<init>");
++    if (!req && !init) return;
++    JNIEnv* e = static_cast<JNIEnv*>(env);
++    const std::string cn = class_name(e, static_cast<jclass>(cls));
++    std::lock_guard<std::mutex> lock(g_mu);
++    if (req && cn.find("NiaNet") != std::string::npos) {
++        int n = 0;
++        auto s = string_params(sig, &n);
++        if (n == 8 && s.size() >= 2 && s[0] == 2 && s[1] == 4) {
++            g_request.insert(static_cast<jmethodID>(id));
++            log("windstock: routing %s.%s%s", cn.c_str(), name, sig);
++        }
++    } else if (init && (cn == "com.unity3d.player.WWW" || cn.find("UnityWebRequest") != std::string::npos)) {
++        g_www.insert(static_cast<jmethodID>(id));
++        log("windstock: routing %s.<init>%s", cn.c_str(), sig);
++    }
++}
++
++void windstock_before_call(void* env, void* method, void* args_v, const char* sig) {
++    if (!g_wsnet) return;
++    JNIEnv* e = static_cast<JNIEnv*>(env);
++    auto* a = static_cast<jvalue*>(args_v);
++    jmethodID m = static_cast<jmethodID>(method);
++    bool req, www;
++    {
++        std::lock_guard<std::mutex> lock(g_mu);
++        req = g_request.count(m) != 0;
++        www = !req && g_www.count(m) != 0;
++    }
++    if (req && a[2].l) {
++        auto r = static_cast<jobjectArray>(e->CallStaticObjectMethod(g_wsnet, g_route, a[2].l, a[4].l));
++        if (e->ExceptionCheck()) { e->ExceptionDescribe(); e->ExceptionClear(); return; }
++        if (!r) return;
++        a[2].l = e->GetObjectArrayElement(r, 0);
++        a[4].l = e->GetObjectArrayElement(r, 1);
++    } else if (www && sig) {
++        int n = 0;
++        for (int i : string_params(sig, &n)) {
++            if (!a[i].l) continue;
++            jobject to = e->CallStaticObjectMethod(g_wsnet, g_local_url, a[i].l);
++            if (e->ExceptionCheck()) { e->ExceptionClear(); continue; }
++            if (to) a[i].l = to;
++        }
++    }
++}
++
++void windstock_after_native(const char* label, NativeRegs& regs) {
++    if (!g_wsnet || !std::strstr(label, "nativeSetupConnection")) return;
++    JNIEnv* e = reinterpret_cast<JNIEnv*>(static_cast<std::uintptr_t>(regs.x[0]));
++    // static: x1 = class, x2 = the HttpURLConnection; instance: x1 = this, x2 = first argument
++    jobject conn = reinterpret_cast<jobject>(static_cast<std::uintptr_t>(regs.x[2]));
++    jclass hc = e->FindClass("java/net/HttpURLConnection");
++    const bool ok = conn && hc && e->IsInstanceOf(conn, hc);
++    if (hc) e->DeleteLocalRef(hc);
++    if (!ok) { log("windstock: nativeSetupConnection arg is not an HttpURLConnection"); return; }
++    e->CallStaticVoidMethod(g_wsnet, g_setup, conn);
++    if (e->ExceptionCheck()) { e->ExceptionDescribe(); e->ExceptionClear(); }
++}
++
++}  // namespace zb
++
++extern "C" JNIEXPORT void JNICALL Java_com_windstock_translator64_WsHooks_nInit(JNIEnv* env, jclass, jclass wsnet) {
++    using namespace zb;
++    g_wsnet = static_cast<jclass>(env->NewGlobalRef(wsnet));
++    g_route = env->GetStaticMethodID(g_wsnet, "route", "(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;");
++    g_local_url = env->GetStaticMethodID(g_wsnet, "localUrl", "(Ljava/lang/String;)Ljava/lang/String;");
++    g_setup = env->GetStaticMethodID(g_wsnet, "setup", "(Ljava/net/HttpURLConnection;)V");
++    if (env->ExceptionCheck()) { env->ExceptionClear(); g_wsnet = nullptr; }
++    set_native_post_hook(&windstock_after_native);
++    log("windstock: server routing hooks %s", g_wsnet ? "on" : "FAILED");
++}
+diff --git a/translator/core/android/windstock_hooks.h b/translator/core/android/windstock_hooks.h
+new file mode 100644
+index 0000000..035754b
+--- /dev/null
++++ b/translator/core/android/windstock_hooks.h
+@@ -0,0 +1,8 @@
++// Windstock additions (AGPL-3.0). See windstock_hooks.cpp.
++#pragma once
++#include "zb/native_thunks.h"
++namespace zb {
++void windstock_note_method(void* env, void* cls, const char* name, const char* sig, void* id);
++void windstock_before_call(void* env, void* method, void* args, const char* sig);
++void windstock_after_native(const char* label, NativeRegs& regs);
++}
+diff --git a/translator/core/include/zb/host_egl.h b/translator/core/include/zb/host_egl.h
+index 0a50c2a..3563f56 100644
+--- a/translator/core/include/zb/host_egl.h
++++ b/translator/core/include/zb/host_egl.h
+@@ -9,8 +9,11 @@
+ #include <optional>
+ #include <string>
+ #include <type_traits>
++#include <utility>
++#include <map>
+ #include <unordered_map>
+ #include <utility>
++#include <utility>
+ 
+ #include "zb/egl_backend.h"
+ #include "zb/guest_thread.h"
+@@ -163,7 +166,9 @@ private:
+     StubResolver stubs_;
+     GlobalHandles objects_{HandleKind::Global};
+     mutable std::mutex mutex_;
+-    std::unordered_map<const void*, std::uint32_t> by_value_;
++    // Keyed by kind as well: some drivers (the Android emulator's) number displays, configs and
++// contexts with small integers that collide, and one handle must not stand for two objects.
++    std::map<std::pair<const void*, int>, std::uint32_t> by_value_;
+     std::unordered_map<std::uint32_t, EglObject> kinds_;
+     std::uint32_t libegl_ = 0;
+     std::uint32_t libgles_ = 0;
+diff --git a/translator/core/include/zb/library_runtime.h b/translator/core/include/zb/library_runtime.h
+index 1fe3a1a..d91a147 100644
+--- a/translator/core/include/zb/library_runtime.h
++++ b/translator/core/include/zb/library_runtime.h
+@@ -58,6 +58,7 @@ public:
+     std::unique_ptr<Carrier> borrow(std::string& error);
+ 
+     GuestMemory& memory();
++    Process& process();   // Windstock: the guest process, for the hook layer
+     // Redirects guest file operations under one directory to another (Process::add_path_alias):
+     // the launcher's arm64 proxy directory stands for the plugin's arm32 libraries.
+     void add_path_alias(std::string guest_prefix, std::string host_prefix);
+diff --git a/translator/core/include/zb/native_thunks.h b/translator/core/include/zb/native_thunks.h
+index a61795f..1cf527f 100644
+--- a/translator/core/include/zb/native_thunks.h
++++ b/translator/core/include/zb/native_thunks.h
+@@ -33,6 +33,11 @@ struct NativeTarget {
+ using NativeDispatcher = void (*)(std::uint32_t slot, NativeRegs& regs);
+ void set_native_dispatcher(NativeDispatcher dispatcher);
+ 
++// Windstock: called after a guest native returns (label = "Class.method"); null by default.
++using NativePostHook = void (*)(const char* label, NativeRegs& regs);
++void set_native_post_hook(NativePostHook hook);
++NativePostHook native_post_hook();
++
+ // Address of a thunk, usable as the fnPtr of RegisterNatives; nullptr when out of range.
+ void* native_thunk_address(std::uint32_t slot);
+ 
+diff --git a/translator/core/include/zb/process.h b/translator/core/include/zb/process.h
+index 1161d7b..bccf080 100644
+--- a/translator/core/include/zb/process.h
++++ b/translator/core/include/zb/process.h
+@@ -147,6 +147,8 @@ public:
+     // guest loaded by itself (a JNI shim whose JNI_OnLoad dlopens the real library, which Unity
+     // plugins do) appears here and nowhere else.
+     std::vector<std::string> mapped_file_paths() const;
++    // Windstock: [base, base+size) of the file-backed mappings whose path ends with `suffix`.
++    bool module_range(const std::string& suffix, std::uint32_t* base, std::uint32_t* size);
+     // Host path of the guest executable, as reported by /proc/self/exe.
+     const std::string& exe_path() const { return exe_path_; }
+     // Opens a synthesized /proc file (/proc/self/maps, /proc/self/stat, /proc/cpuinfo) that
+diff --git a/translator/core/src/gl/host_egl.cpp b/translator/core/src/gl/host_egl.cpp
+index 686ed0c..94cfe6f 100644
+--- a/translator/core/src/gl/host_egl.cpp
++++ b/translator/core/src/gl/host_egl.cpp
+@@ -130,11 +130,11 @@ void HostEgl::reject(Call& call, EGLint error, const char* reason) {
+ std::uint32_t HostEgl::handle_for(const void* value, EglObject kind) {
+     if (value == nullptr) return 0;
+     std::lock_guard<std::mutex> lock(mutex_);
+-    const auto found = by_value_.find(value);
++    const auto found = by_value_.find({value, static_cast<int>(kind)});
+     if (found != by_value_.end()) return found->second;
+     const std::uint32_t handle = objects_.add(reinterpret_cast<std::uint64_t>(value));
+     if (handle == 0) return 0;
+-    by_value_.emplace(value, handle);
++    by_value_.emplace(std::make_pair(value, static_cast<int>(kind)), handle);
+     kinds_.emplace(handle, kind);
+     return handle;
+ }
+diff --git a/translator/core/src/initial_stack.cpp b/translator/core/src/initial_stack.cpp
+index dd91620..55d0f49 100644
+--- a/translator/core/src/initial_stack.cpp
++++ b/translator/core/src/initial_stack.cpp
+@@ -1,3 +1,5 @@
++#include <sys/syscall.h>
++#include <unistd.h>
+ #include "zb/initial_stack.h"
+ 
+ #include <elf.h>
+@@ -39,7 +41,7 @@ std::uint32_t build_initial_stack(GuestMemory& mem, std::uint32_t stack_top, con
+     for (const auto& a : argv) arg_addrs.push_back(push_string(a));
+ 
+     std::uint8_t random_bytes[16];
+-    if (getrandom(random_bytes, sizeof random_bytes, 0) != sizeof random_bytes) {
++    if (syscall(SYS_getrandom, random_bytes, sizeof random_bytes, 0) != sizeof random_bytes) {
+         for (std::size_t i = 0; i < sizeof random_bytes; ++i) random_bytes[i] = static_cast<std::uint8_t>(i * 37 + 11);
+     }
+     const std::uint32_t random_addr = push_bytes(random_bytes, sizeof random_bytes);
+diff --git a/translator/core/src/jni/host_jni_natives.cpp b/translator/core/src/jni/host_jni_natives.cpp
+index f105704..9d9381d 100644
+--- a/translator/core/src/jni/host_jni_natives.cpp
++++ b/translator/core/src/jni/host_jni_natives.cpp
+@@ -40,6 +40,7 @@ void dispatch_native(std::uint32_t slot, NativeRegs& regs) {
+         regs.d[0] = 0;
+         return;
+     }
++    if (NativePostHook hook = native_post_hook()) hook(target->label.c_str(), regs);
+     store_native_result(return_type, result->guest.r0, result->guest.r1, regs,
+                         [&](std::uint32_t) { return result->ref; });
+ }
+diff --git a/translator/core/src/jni/native_thunks.cpp b/translator/core/src/jni/native_thunks.cpp
+index 2ab3e75..cbb8f1a 100644
+--- a/translator/core/src/jni/native_thunks.cpp
++++ b/translator/core/src/jni/native_thunks.cpp
+@@ -27,6 +27,10 @@ static_assert(offsetof(NativeRegs, d) == 64);
+ static_assert(offsetof(NativeRegs, stack) == 128);
+ static_assert(sizeof(NativeRegs) == 144);
+ 
++static NativePostHook g_post_hook = nullptr;
++void set_native_post_hook(NativePostHook hook) { g_post_hook = hook; }
++NativePostHook native_post_hook() { return g_post_hook; }
++
+ void set_native_dispatcher(NativeDispatcher dispatcher) {
+     g_dispatcher.store(dispatcher);
+ }
+diff --git a/translator/core/src/jni/proxy_runtime.cpp b/translator/core/src/jni/proxy_runtime.cpp
+index 3521648..cb85867 100644
+--- a/translator/core/src/jni/proxy_runtime.cpp
++++ b/translator/core/src/jni/proxy_runtime.cpp
+@@ -18,6 +18,11 @@
+ 
+ namespace zb {
+ 
++// Windstock additions (android/windstock_guest.cpp)
++bool windstock_handle_host_call(std::uint32_t index, GuestThread& thread);
++void windstock_guest_started(LibraryRuntime* runtime);
++
++
+ namespace {
+ 
+ constexpr std::uint32_t kMaxTargetSdk = 10000;
+@@ -510,6 +515,7 @@ GuestJniEngine::GuestJniEngine(JniBackend& backend, GlBackend* gl_backend, HostG
+     runtime_->set_host_call_handler([host_jni, host_gl, host_assets, host_windows, host_egl,
+                                      host_looper, host_sensors, host_input, host_configuration,
+                                      host_compat](std::uint32_t index, GuestThread& thread) {
++        if (windstock_handle_host_call(index, thread)) return true;
+         if (host_gl != nullptr && host_gl->handle_host_call(index, thread)) return true;
+         if (host_assets != nullptr && host_assets->handle_host_call(index, thread)) return true;
+         if (host_windows != nullptr && host_windows->handle_host_call(index, thread)) return true;
+@@ -534,6 +540,7 @@ bool GuestJniEngine::bind_class_loader(JniBackend::Env, JniBackend::Ref, std::st
+ 
+ bool GuestJniEngine::start(const LibraryRuntimeOptions& options, std::string& error) {
+     if (!runtime_->start(options, error)) return false;
++    windstock_guest_started(runtime_);
+     if (!host_jni_->ready()) {
+         error = "zbhost reported ready but libzbjni.so did not register the guest JNI API";
+         return false;
+diff --git a/translator/core/src/library_runtime.cpp b/translator/core/src/library_runtime.cpp
+index 699f0fa..0160d5a 100644
+--- a/translator/core/src/library_runtime.cpp
++++ b/translator/core/src/library_runtime.cpp
+@@ -484,6 +484,8 @@ std::unique_ptr<LibraryRuntime::Carrier> LibraryRuntime::borrow(std::string& err
+     return std::unique_ptr<Carrier>(new Carrier(std::move(state)));
+ }
+ 
++Process& LibraryRuntime::process() { return impl_->process; }
++
+ GuestMemory& LibraryRuntime::memory() {
+     return impl_->process.memory();
+ }
+diff --git a/translator/core/src/process.cpp b/translator/core/src/process.cpp
+index 00bd12e..58db6b7 100644
+--- a/translator/core/src/process.cpp
++++ b/translator/core/src/process.cpp
+@@ -209,6 +209,20 @@ void Process::record_file_mapping(std::uint32_t start, std::uint32_t length, std
+     file_mappings_.push_back({start, length, offset, std::move(path), offset_is_vaddr});
+ }
+ 
++bool Process::module_range(const std::string& suffix, std::uint32_t* base, std::uint32_t* size) {
++    std::lock_guard<std::mutex> lock(mm_mutex_);
++    std::uint64_t lo = ~0ULL, hi = 0;
++    for (const auto& m : file_mappings_) {
++        if (m.path.size() < suffix.size() || m.path.compare(m.path.size() - suffix.size(), suffix.size(), suffix) != 0) continue;
++        lo = std::min<std::uint64_t>(lo, m.start);
++        hi = std::max<std::uint64_t>(hi, static_cast<std::uint64_t>(m.start) + m.length);
++    }
++    if (hi == 0) return false;
++    *base = static_cast<std::uint32_t>(lo);
++    *size = static_cast<std::uint32_t>(hi - lo);
++    return true;
++}
++
+ std::vector<std::string> Process::mapped_file_paths() const {
+     std::vector<std::string> paths;
+     for (auto it = file_mappings_.rbegin(); it != file_mappings_.rend(); ++it) {
+diff --git a/translator/core/src/syscalls.cpp b/translator/core/src/syscalls.cpp
+index bba730a..2b0a54a 100644
+--- a/translator/core/src/syscalls.cpp
++++ b/translator/core/src/syscalls.cpp
+@@ -1536,6 +1536,16 @@ bool handle_syscall(Process& proc, GuestThread& thread) {
+         break;
+     case NR_connect: {
+         std::uint8_t* addr = c.mem.host_ptr(c.a[1], c.a[2], kPageRead);
++        // Windstock: plain-HTTP connects (the PTC login) go to the app's relay on 127.0.0.1:18080,
++        // which carries them over the pinned TLS link to the Windstock server.
++        std::uint8_t local[128];
++        if (addr && c.a[2] >= 8 && c.a[2] <= sizeof local && addr[0] == 2 /*AF_INET*/ && addr[1] == 0 &&
++            addr[2] == 0 && addr[3] == 80) {
++            std::memcpy(local, addr, c.a[2]);
++            local[2] = 18080 >> 8; local[3] = 18080 & 0xff;
++            local[4] = 127; local[5] = 0; local[6] = 0; local[7] = 1;
++            addr = local;
++        }
+         res = (c.a[2] != 0 && !addr) ? -EFAULT
+                                      : result_of(::syscall(SYS_connect, static_cast<int>(c.a[0]), addr, c.a[2]));
+         break;

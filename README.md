@@ -1,12 +1,9 @@
-# translator64 — Windstock's own 32-bit-on-64-bit ARM translator
+# translator64
 
-Runs armeabi-v7a native libraries on 64-bit-only ARM Android by JIT-translating
-the 32-bit code with [Dynarmic](https://github.com/merryhime/dynarmic) (0BSD).
-Built from scratch for Windstock because Chucny's ZettaBridge fork is under a
-copyright licence we can't use.
+> ## Credit: Chucny's Translator
+> **Windstock 64 runs on Chucny's Translator** ([github.com/Chucny/translator](https://github.com/Chucny/translator), AGPL-3.0, (c) Chucny), used with his permission. The translator is his work, built on ZailoxTT's original runtime. Our changes to it are in [`chucny/chucny-translator-windstock.patch`](chucny/chucny-translator-windstock.patch), built on upstream commit [`chucny/UPSTREAM_COMMIT`](chucny/UPSTREAM_COMMIT). His credits must stay with every copy. See [NOTICE](NOTICE).
 
-**Why:** new phones ship 64-bit-only, and 0.35 PoGO is 32-bit. This removes the
-32-bit wall without his code. See memory `partner-064bit-029`, `android-launcher`.
+This branch also holds an earlier experiment: Windstock's own 32-bit-on-64-bit ARM translator, which JIT-translates armeabi-v7a code with [Dynarmic](https://github.com/merryhime/dynarmic) (0BSD). The shipped Windstock 64 build uses Chucny's Translator instead, so treat the code below as research history.
 
 ## Phase 1 status — PoC PASSES (2026-10-15, arm64 emulator)
 
