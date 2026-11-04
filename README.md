@@ -4,7 +4,7 @@ Windstock is a Pokémon GO private server and a set of launchers that let you pl
 
 I built this by reverse-engineering the old client (0.29 and 0.35, with work on 0.63, 0.67 and 0.71) and writing the server from scratch. It's a hobby project that got bigger than planned, and it now has an online server, a website, iOS and Android launchers, and a few mods on top.
 
-> **Windstock 64 is powered by [Chucny's Translator](https://github.com/Chucny/translator)** (AGPL-3.0, used with his permission). The translator is his work. Full credit and our patch are on the [`translator64`](../../tree/translator64) branch.
+> **All source code in this repo is original Windstock code.** The one thing it doesn't cover is the prebuilt **Windstock 64** APK on [Releases](../../releases), which bundles [Chucny's Translator](https://github.com/Chucny/translator) (AGPL-3.0, used with his permission) as a separate component. The credit and our patch to it are on the [`translator64`](../../tree/translator64) branch.
 
 > **This repo contains none of Niantic's code, assets, or data.** You bring your own legally obtained client. Windstock is not affiliated with or endorsed by Niantic, Nintendo, or The Pokémon Company.
 
@@ -45,7 +45,7 @@ Heads up on a few things I'd rather be upfront about:
 
 - Some features are untested on a physical phone. Where that's the case, the branch README says so.
 - The branches hold source only. Game binaries, certificates and signing keys are deliberately **not** in the repo. Prebuilt launchers and tweaks live on [Releases](../../releases).
-- The Android 64-bit build runs on Chucny's Translator (AGPL-3.0), used with permission. His name and credits have to stay on every copy. See the `translator64` branch.
+- The prebuilt Windstock 64 APK bundles Chucny's Translator (AGPL-3.0), used with permission. His name and credits stay on every copy. The source in this repo is original. See the `translator64` branch.
 
 ## Contributing
 
