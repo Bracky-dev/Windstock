@@ -110,7 +110,7 @@ Run the server on your computer, then in the launcher open **Settings > Server c
 
 ### Android 64-bit phones
 
-Some newer phones cannot run 32-bit apps at all. **Windstock 64** is a separate build that runs the 32-bit game through a translator (Chucny's Translator, AGPL-3.0, used with permission).
+Some newer phones cannot run 32-bit apps at all. **Windstock 64** is a separate build that runs the 32-bit game through a translator ([Chucny's Translator](https://github.com/Chucny/translator), AGPL-3.0, used with permission; the translator is his work).
 
 1. Download the Windstock 64 APK from the website.
 2. Install it the same way as the launcher above.

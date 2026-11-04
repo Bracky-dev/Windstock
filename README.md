@@ -4,6 +4,8 @@ Windstock is a Pokémon GO private server and a set of launchers that let you pl
 
 I built this by reverse-engineering the old client (0.29 and 0.35, with work on 0.63, 0.67 and 0.71) and writing the server from scratch. It's a hobby project that got bigger than planned, and it now has an online server, a website, iOS and Android launchers, and a few mods on top.
 
+> **Windstock 64 is powered by [Chucny's Translator](https://github.com/Chucny/translator)** (AGPL-3.0, used with his permission). The translator is his work. Full credit and our patch are on the [`translator64`](../../tree/translator64) branch.
+
 > **This repo contains none of Niantic's code, assets, or data.** You bring your own legally obtained client. Windstock is not affiliated with or endorsed by Niantic, Nintendo, or The Pokémon Company.
 
 ## How the repo is laid out
@@ -43,7 +45,7 @@ Heads up on a few things I'd rather be upfront about:
 
 - Some features are untested on a physical phone. Where that's the case, the branch README says so.
 - The branches hold source only. Game binaries, certificates and signing keys are deliberately **not** in the repo. Prebuilt launchers and tweaks live on [Releases](../../releases).
-- The Android 64-bit build uses Chucny's Translator (AGPL-3.0), used with permission. His credits have to stay. See the `translator64` branch.
+- The Android 64-bit build runs on Chucny's Translator (AGPL-3.0), used with permission. His name and credits have to stay on every copy. See the `translator64` branch.
 
 ## Contributing
 
@@ -57,7 +59,8 @@ This is an independent, educational interoperability project for personal use wi
 
 - [AeonLucid/POGOProtos](https://github.com/AeonLucid/POGOProtos) for protocol definitions
 - [rastapasta/pokemon-go-mitm](https://github.com/rastapasta/pokemon-go-mitm) for map-object layout reference
-- Chucny, for the Translator runtime behind Windstock 64
+- [Chucny](https://github.com/Chucny/translator), author of the Translator that makes Windstock 64 possible (AGPL-3.0), and ZailoxTT, whose runtime it builds on
+- Android Open Source Project (guest sysroot, Apache-2.0) and the Dynarmic contributors (0BSD)
 - OpenStreetMap contributors for the map data
 
 ## License
