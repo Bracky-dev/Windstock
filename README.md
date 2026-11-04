@@ -6,7 +6,7 @@ I built this by reverse-engineering the old client (0.29 and 0.35, with work on 
 
 > **All source code in this repo is original Windstock code.** The one thing it doesn't cover is the prebuilt **Windstock 64** APK on [Releases](../../releases), which bundles [Chucny's Translator](https://github.com/Chucny/translator) (AGPL-3.0, used with his permission) as a separate component. The credit and our patch to it are on the [`translator64`](../../tree/translator64) branch.
 
-> **This repo contains none of Niantic's code, assets, or data.** You bring your own legally obtained client. Windstock is not affiliated with or endorsed by Niantic, Nintendo, or The Pokémon Company.
+> **The source code in this repo contains none of Niantic's code, assets, or data.** The prebuilt launcher apps on [Releases](../../releases) and the website are different: they bundle a copy of the original game, which belongs to Niantic. They are provided for personal, non-commercial use only. Windstock is not affiliated with or endorsed by Niantic, Nintendo, or The Pokémon Company, and if the rights holders ask, those downloads will come down.
 
 ## How the repo is laid out
 
@@ -53,7 +53,12 @@ Bug reports and pull requests are welcome. Open an issue first if it's a big cha
 
 ## Legal
 
-This is an independent, educational interoperability project for personal use with a client you already own. Don't redistribute Niantic's app or assets. "Pokémon" and "Pokémon GO" are trademarks of their respective owners.
+- **Source code:** original Windstock code, licensed AGPL-3.0. It includes no Niantic code, assets, or data.
+- **Prebuilt apps:** the launcher builds (Releases and windstock.org) bundle the original Pokémon GO game and art, which belong to Niantic and The Pokémon Company. They are for personal, non-commercial use, and I don't claim any rights to that material. Don't resell or republish them.
+- **Trademarks:** "Pokémon" and "Pokémon GO" are trademarks of their respective owners. This project is an independent fan project and is not affiliated with or endorsed by them.
+- **Map data:** © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors, available under the ODbL.
+- **Third-party components** keep their own licenses and credits (see Credits).
+- **Takedowns:** if you are a rights holder with a concern, open an issue and I'll respond.
 
 ## Credits
 

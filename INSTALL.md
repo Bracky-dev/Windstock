@@ -14,7 +14,7 @@ This guide covers every way to run Windstock. Pick the path that matches your ph
 
 ## Before you start
 
-- **The game client is not included.** Windstock never ships Niantic's app. The launchers handle the game for you, but if you build from source you must supply your own legally obtained client.
+- **The prebuilt launchers include a copy of the original game**, which belongs to Niantic. They're for personal, non-commercial use. The source code in this repo does not include the game, so if you build from source you must supply your own legally obtained client.
 - **You do not need a Niantic, Google or PTC account.** Log in with an email on the Windstock site or any username on a local server.
 - **You do not type a server address.** The launchers have the public Windstock server built in. Local mode uses `127.0.0.1` automatically.
 - **Back up first** if you already have a different Windstock install. Profiles live inside the app, and deleting the app deletes them.
