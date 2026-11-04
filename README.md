@@ -1,7 +1,7 @@
 # translator64
 
 > ## Credit: Chucny's Translator
-> **Windstock 64 runs on Chucny's Translator** ([github.com/Chucny/translator](https://github.com/Chucny/translator), AGPL-3.0, (c) Chucny), used with his permission. The translator is his work, built on ZailoxTT's original runtime. Our changes to it are in [`chucny/chucny-translator-windstock.patch`](chucny/chucny-translator-windstock.patch), built on upstream commit [`chucny/UPSTREAM_COMMIT`](chucny/UPSTREAM_COMMIT). His credits must stay with every copy. See [NOTICE](NOTICE).
+> The prebuilt **Windstock 64** APK bundles [Chucny's Translator](https://github.com/Chucny/translator) (AGPL-3.0, (c) Chucny) as a separate component, used with his permission. It is built on ZailoxTT's original runtime. The source in this branch is Windstock's own; the only file derived from his code is [`chucny/chucny-translator-windstock.patch`](chucny/chucny-translator-windstock.patch), our changes to it against upstream commit [`chucny/UPSTREAM_COMMIT`](chucny/UPSTREAM_COMMIT), included to satisfy the AGPL. His credits stay with every copy. See [NOTICE](NOTICE).
 
 This branch also holds an earlier experiment: Windstock's own 32-bit-on-64-bit ARM translator, which JIT-translates armeabi-v7a code with [Dynarmic](https://github.com/merryhime/dynarmic) (0BSD). The shipped Windstock 64 build uses Chucny's Translator instead, so treat the code below as research history.
 
